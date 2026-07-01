@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: hmart-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: hmart
+    networks:
+      - hmart-network
+    restart: unless-stopped
+
+  # Node.js Backend
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: hmart-server
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/hmart
+      - JWT_SECRET=${JWT_SECRET:-hmart_super_secret_key_change_in_production_2026}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-hmart_refresh_secret_key_change_in_production_2026}
+      - JWT_EXPIRE=15m
+      - JWT_REFRESH_EXPIRE=7d
+      - PYTHON_SERVICE_URL=http://python-service:8000
+      - PORT=5000
+    depends_on:
+      - mongodb
+    networks:
+      - hmart-network
+    restart: unless-stopped
+
+  # React Frontend
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: hmart-client
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - hmart-network
+    restart: unless-stopped
+
+  # Python Analytics Service
+  python-service:
+    build:
+      context: ./python-services
+      dockerfile: Dockerfile
+    container_name: hmart-python
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/hmart
+    networks:
+      - hmart-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+
+networks:
+  hmart-network:
+    driver: bridge
