@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://inventory-shop-2.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
