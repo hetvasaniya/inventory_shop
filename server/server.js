@@ -21,9 +21,21 @@ app.set('io', io);
 
 // Security Middleware
 app.use(helmet());
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://inventory-shop-lovat.vercel.app"
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed"));
+    }
+  },
+  credentials: true,
 }));
 
 const limiter = rateLimit({
