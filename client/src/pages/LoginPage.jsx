@@ -6,8 +6,8 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@gmail.com');
+  const [password, setPassword] = useState('19191919');
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
 
@@ -28,7 +28,7 @@ export default function LoginPage() {
       <Paper elevation={3} sx={{ p: 4, width: 400, borderRadius: 2 }}>
         <Typography variant="h5" mb={3} textAlign="center">Login to H-Mart</Typography>
         <form onSubmit={handleSubmit}>
-          <TextField fullWidth label="Email" variant="outlined" margin="normal" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <TextField fullWidth label="Email" variant="outlined" margin="normal" value={email}  onChange={(e) => setEmail(e.target.value)} required />
           <TextField fullWidth label="Password" type="password" variant="outlined" margin="normal" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <Button fullWidth type="submit" variant="contained" color="primary" sx={{ mt: 3, mb: 2, p: 1.5 }}>
             Login
