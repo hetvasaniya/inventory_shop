@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@gmail.com');
-  const [password, setPassword] = useState('19191919');
+  const [password, setPassword] = useState('123123123');
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
 
