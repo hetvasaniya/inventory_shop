@@ -1,7 +1,26 @@
 version: '3.8'
 
+# ─────────────────────────────────────────────────────────────────────────────
+# H-Mart Docker Compose
+#
+# TWO MONGODB PROFILES:
+#
+#   1. Default (standalone) — use for local development without transactions
+#      Starts: mongodb (standalone), server, client, python-service
+#      Command: docker compose up
+#
+#   2. replica profile — use when you need true ACID multi-document transactions
+#      Starts: mongo-rs (replica set), server, client, python-service
+#      Command: docker compose --profile replica up
+#      After first start, run once to initialise the replica set:
+#        docker exec hmart-mongo-rs mongosh --eval "rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo-rs:27017'}]})"
+#      Then update MONGODB_URI in server environment below to:
+#        mongodb://mongo-rs:27017/hmart?replicaSet=rs0
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
-  # MongoDB Database
+
+  # ── Standalone MongoDB (default — works without replica set) ────────────────
   mongodb:
     image: mongo:7.0
     container_name: hmart-mongodb
@@ -14,8 +33,33 @@ services:
     networks:
       - hmart-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # Node.js Backend
+  # ── Replica-set MongoDB (optional — enables multi-document transactions) ─────
+  mongo-rs:
+    image: mongo:7.0
+    container_name: hmart-mongo-rs
+    profiles:
+      - replica
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_rs_data:/data/db
+    networks:
+      - hmart-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Node.js Backend ──────────────────────────────────────────────────────────
   server:
     build:
       context: ./server
@@ -25,20 +69,26 @@ services:
       - "5000:5000"
     environment:
       - NODE_ENV=production
+      # Default: standalone MongoDB (no transactions)
       - MONGODB_URI=mongodb://mongodb:27017/hmart
+      # For replica set transactions, change the line above to:
+      # - MONGODB_URI=mongodb://mongo-rs:27017/hmart?replicaSet=rs0
       - JWT_SECRET=${JWT_SECRET:-hmart_super_secret_key_change_in_production_2026}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-hmart_refresh_secret_key_change_in_production_2026}
       - JWT_EXPIRE=15m
       - JWT_REFRESH_EXPIRE=7d
       - PYTHON_SERVICE_URL=http://python-service:8000
       - PORT=5000
+      - DEFAULT_CURRENCY=INR
+      - DEFAULT_GST_STATE=Maharashtra
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - hmart-network
     restart: unless-stopped
 
-  # React Frontend
+  # ── React Frontend ───────────────────────────────────────────────────────────
   client:
     build:
       context: ./client
@@ -52,7 +102,7 @@ services:
       - hmart-network
     restart: unless-stopped
 
-  # Python Analytics Service
+  # ── Python Analytics Service ─────────────────────────────────────────────────
   python-service:
     build:
       context: ./python-services
@@ -68,6 +118,7 @@ services:
 
 volumes:
   mongodb_data:
+  mongodb_rs_data:
 
 networks:
   hmart-network:
