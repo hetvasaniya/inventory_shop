@@ -96,7 +96,7 @@ export default function StickerPrintPage() {
         {/* Right - Queue */}
         <Grid item xs={12} md={7}>
           <Paper sx={{ p: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
               <Typography variant="h6" fontWeight={700}>Print Queue</Typography>
               <Button
                 variant="contained"

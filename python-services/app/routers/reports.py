@@ -1,5 +1,5 @@
 """
-H-Mart Reports Router
+BizGrow Reports Router
 PDF report generation and data export.
 """
 from fastapi import APIRouter, HTTPException

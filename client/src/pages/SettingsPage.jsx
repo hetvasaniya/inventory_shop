@@ -108,7 +108,7 @@ export default function SettingsPage() {
                 </Grid>
               </Grid>
 
-              <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
                 <Button type="submit" variant="contained" startIcon={<Save />}>
                   Save Settings
                 </Button>

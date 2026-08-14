@@ -1,5 +1,5 @@
 """
-H-Mart Prediction Router
+BizGrow Prediction Router
 AI-based demand prediction and restock suggestions using scikit-learn.
 """
 from fastapi import APIRouter, HTTPException

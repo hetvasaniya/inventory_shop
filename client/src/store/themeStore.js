@@ -9,6 +9,10 @@ export const useThemeStore = create(
         set((state) => ({
           mode: state.mode === 'dark' ? 'light' : 'dark',
         })),
+      toggleTheme: () =>
+        set((state) => ({
+          mode: state.mode === 'dark' ? 'light' : 'dark',
+        })),
     }),
     {
       name: 'theme-storage',

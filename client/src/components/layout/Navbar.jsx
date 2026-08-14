@@ -77,7 +77,7 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
 
         <Box sx={{ flex: 1 }}>
           <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {shop?.shopName || 'H-Mart Store'}
+            {shop?.shopName || 'BizGrow Store'}
           </Typography>
         </Box>
 

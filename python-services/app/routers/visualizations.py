@@ -1,5 +1,5 @@
 """
-H-Mart Visualization Router
+BizGrow Visualization Router
 Generates interactive charts and graphs for the sales dashboard.
 """
 from fastapi import APIRouter, HTTPException

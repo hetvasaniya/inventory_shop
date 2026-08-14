@@ -84,9 +84,6 @@ export default function RegisterPage() {
       const status = error.response?.status;
       const data = error.response?.data;
 
-      console.log('[REGISTER ERROR] Status:', status);
-      console.log('[REGISTER ERROR] Data:', data);
-
       if (data) {
         const parsed = parseServerErrors(data);
 
@@ -125,19 +122,22 @@ export default function RegisterPage() {
     <Box
       sx={{
         display: 'flex',
+        flexDirection: 'column',
         minHeight: '100vh',
+        width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
         bgcolor: 'background.default',
-        py: 4,
+        p: { xs: 2, sm: 4 },
+        boxSizing: 'border-box',
       }}
     >
-      <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 520, borderRadius: 2 }}>
-        <Typography variant="h5" mb={1} textAlign="center" fontWeight={700}>
-          Register Shop
+      <Paper elevation={3} sx={{ p: { xs: 3, sm: 4 }, width: '100%', maxWidth: 520, borderRadius: 3, boxSizing: 'border-box' }}>
+        <Typography variant="h4" mb={1} textAlign="center" fontWeight={800} color="primary.main" sx={{ letterSpacing: -0.5 }}>
+          BizGrow
         </Typography>
         <Typography variant="body2" color="text.secondary" textAlign="center" mb={3}>
-          Create your shop account to get started
+          Create your business account to get started
         </Typography>
 
         {/* Top-level error banner */}

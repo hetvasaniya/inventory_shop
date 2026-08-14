@@ -53,7 +53,49 @@ const validateLogin = [
   handleValidationErrors,
 ];
 
+const validateForgotPassword = [
+  body('email').isEmail().withMessage('A valid email address is required'),
+  handleValidationErrors,
+];
+
+const validateVerifyCode = [
+  body('email').isEmail().withMessage('A valid email address is required'),
+  body('code')
+    .isString()
+    .trim()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('Verification code must be exactly 6 digits')
+    .isNumeric()
+    .withMessage('Verification code must contain only numbers'),
+  handleValidationErrors,
+];
+
+const validateResetPassword = [
+  body('email').isEmail().withMessage('A valid email address is required'),
+  body('code')
+    .isString()
+    .trim()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('Verification code must be exactly 6 digits'),
+  body('newPassword')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters long'),
+  body('confirmPassword')
+    .notEmpty()
+    .withMessage('Please confirm your new password')
+    .custom((value, { req }) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('New password and confirm password do not match');
+      }
+      return true;
+    }),
+  handleValidationErrors,
+];
+
 module.exports = {
   validateRegister,
   validateLogin,
+  validateForgotPassword,
+  validateVerifyCode,
+  validateResetPassword,
 };

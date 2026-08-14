@@ -28,7 +28,7 @@ const generateBillPDF = async (bill, shop) => {
       doc
         .font('Helvetica-Bold')
         .fontSize(20)
-        .text(shop.shopName || 'H-Mart Store', { align: 'center' });
+        .text(shop.shopName || 'BizGrow Store', { align: 'center' });
 
       doc.fontSize(9).font('Helvetica');
       if (shop.address) {

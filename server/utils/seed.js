@@ -30,7 +30,7 @@ const seedData = async () => {
     // 1. Create Shop
     console.log('Creating sample Shop...');
     const shop = await Shop.create({
-      shopName: 'H-Mart Supermarket',
+      shopName: 'BizGrow Supermarket',
       gstin: '27AAAAA1111A1Z1', // Valid format for mock testing
       address: {
         street: '123 Main Bazaar',
@@ -39,7 +39,7 @@ const seedData = async () => {
         pincode: '400001',
       },
       phone: '9876543210',
-      email: 'contact@hmart.com',
+      email: 'contact@bizgrow.com',
       currency: 'INR',
       gstState: 'Maharashtra',
     });
@@ -50,7 +50,7 @@ const seedData = async () => {
     const ownerPassword = await bcrypt.hash('password123', 12);
     const owner = await User.create({
       name: 'Aditya Sharma',
-      email: 'owner@hmart.com',
+      email: 'owner@bizgrow.com',
       phone: '9988776655',
       passwordHash: 'password123', // hooks will trigger bcrypt inside save if not hashed, wait, User model has a pre('save') hook:
       // userSchema.pre('save', async function (next) {
@@ -71,7 +71,7 @@ const seedData = async () => {
     console.log('Creating Cashier User...');
     const cashier = await User.create({
       name: 'Rohan Patil',
-      email: 'cashier@hmart.com',
+      email: 'cashier@bizgrow.com',
       phone: '9988665544',
       passwordHash: 'password123', // will be hashed by pre-save hook
       role: 'employee',
@@ -327,8 +327,8 @@ const seedData = async () => {
     console.log('=========================================');
     console.log('DATABASE SEEDING COMPLETED SUCCESSFULLY!');
     console.log('You can now log in using:');
-    console.log('  Owner Email:    owner@hmart.com');
-    console.log('  Cashier Email:  cashier@hmart.com');
+    console.log('  Owner Email:    owner@bizgrow.com');
+    console.log('  Cashier Email:  cashier@bizgrow.com');
     console.log('  Password:       password123');
     console.log('=========================================');
 

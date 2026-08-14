@@ -1,5 +1,5 @@
 """
-H-Mart Python Analytics Service
+BizGrow Python Analytics Service
 FastAPI microservice for data visualization, demand prediction, and report generation.
 """
 from fastapi import FastAPI
@@ -10,8 +10,8 @@ import os
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 app = FastAPI(
-    title="H-Mart Analytics Service",
-    description="Data visualization, demand prediction, and report generation for H-Mart",
+    title="BizGrow Analytics Service",
+    description="Data visualization, demand prediction, and report generation for BizGrow",
     version="1.0.0"
 )
 
@@ -33,7 +33,7 @@ app.include_router(reports.router, prefix="/api/reports/export", tags=["Reports"
 
 @app.get("/")
 async def root():
-    return {"service": "H-Mart Analytics", "status": "running", "version": "1.0.0"}
+    return {"service": "BizGrow Analytics", "status": "running", "version": "1.0.0"}
 
 
 @app.get("/health")

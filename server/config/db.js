@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is missing. Ensure server/.env contains MONGODB_URI.');
+    }
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       // Mongoose 8 uses the new connection string parser and unified topology by default
     });

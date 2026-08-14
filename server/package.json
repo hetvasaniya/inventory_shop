@@ -1,7 +1,7 @@
 {
-  "name": "h-mart-server",
+  "name": "bizgrow-server",
   "version": "1.0.0",
-  "description": "H-Mart Retail Management System - Backend API",
+  "description": "BizGrow — Business Growth, Billing & Inventory Management API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

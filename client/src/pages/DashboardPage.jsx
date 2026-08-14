@@ -44,7 +44,7 @@ export default function DashboardPage() {
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #4CAF50' }}>
-            <CardContent sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center' }}>
+            <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>Today's Sales</Typography>
                 <Typography variant="h4" fontWeight={800} mt={1}>₹{stats?.today?.revenue?.toFixed(2) || '0.00'}</Typography>
@@ -55,7 +55,7 @@ export default function DashboardPage() {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #FF9800' }}>
-            <CardContent sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center' }}>
+            <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>Low Stock Items</Typography>
                 <Typography variant="h4" fontWeight={800} mt={1}>{stats?.inventory?.lowStockCount || 0}</Typography>
@@ -66,7 +66,7 @@ export default function DashboardPage() {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #2196F3' }}>
-            <CardContent sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center' }}>
+            <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>Total Products</Typography>
                 <Typography variant="h4" fontWeight={800} mt={1}>{stats?.inventory?.totalProducts || 0}</Typography>
@@ -77,7 +77,7 @@ export default function DashboardPage() {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #9C27B0' }}>
-            <CardContent sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center' }}>
+            <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>Transactions Today</Typography>
                 <Typography variant="h4" fontWeight={800} mt={1}>{stats?.today?.billCount || 0}</Typography>

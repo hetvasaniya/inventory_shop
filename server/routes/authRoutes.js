@@ -6,6 +6,9 @@ const { protect } = require('../middleware/auth');
 const {
   validateRegister,
   validateLogin,
+  validateForgotPassword,
+  validateVerifyCode,
+  validateResetPassword,
 } = require('../middleware/validate');
 
 // =====================
@@ -22,6 +25,24 @@ router.post(
   '/login',
   validateLogin,
   authController.login
+);
+
+router.post(
+  '/forgot-password',
+  validateForgotPassword,
+  authController.forgotPassword
+);
+
+router.post(
+  '/verify-code',
+  validateVerifyCode,
+  authController.verifyResetCode
+);
+
+router.post(
+  '/reset-password',
+  validateResetPassword,
+  authController.resetPassword
 );
 
 router.post(

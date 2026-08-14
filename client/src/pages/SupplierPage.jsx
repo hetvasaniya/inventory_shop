@@ -80,7 +80,7 @@ export default function SupplierPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>Supplier Directory</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={handleOpenAdd}>
           Add Supplier
@@ -111,8 +111,10 @@ export default function SupplierPage() {
                   <TableCell>{supplier.email}</TableCell>
                   <TableCell>{supplier.gstin || 'N/A'}</TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => handleOpenEdit(supplier)} color="primary"><Edit /></IconButton>
-                    <IconButton onClick={() => handleDelete(supplier._id)} color="error"><Delete /></IconButton>
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                      <IconButton onClick={() => handleOpenEdit(supplier)} color="primary" size="small"><Edit fontSize="small" /></IconButton>
+                      <IconButton onClick={() => handleDelete(supplier._id)} color="error" size="small"><Delete fontSize="small" /></IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))

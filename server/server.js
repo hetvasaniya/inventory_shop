@@ -1,5 +1,11 @@
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const fs = require('fs');
+
+const envPath = fs.existsSync(path.join(__dirname, '.env'))
+  ? path.join(__dirname, '.env')
+  : path.join(__dirname, '../.env');
+
+require('dotenv').config({ path: envPath });
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
@@ -59,7 +65,7 @@ app.use('/api/reports', require('./routes/reportRoutes'));
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.send('H-Mart API is running...');
+  res.send('BizGrow API is running...');
 });
 
 // Error Handler Middleware

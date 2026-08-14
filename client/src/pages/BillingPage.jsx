@@ -255,20 +255,20 @@ export default function BillingPage() {
 
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" fontWeight={700} mb={2}>Bill Summary</Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'between', mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
               <Typography color="text.secondary">Taxable Subtotal</Typography>
               <Typography>₹{subtotal.toFixed(2)}</Typography>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'between', mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
               <Typography color="text.secondary">CGST + SGST</Typography>
               <Typography>₹{totalGst.toFixed(2)}</Typography>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'between', mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
               <Typography color="text.secondary">Discount</Typography>
               <Typography sx={{ color: 'success.main' }}>- ₹{discount.toFixed(2)}</Typography>
             </Box>
             <Divider sx={{ my: 1.5 }} />
-            <Box sx={{ display: 'flex', justifyContent: 'between', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
               <Typography variant="h6" fontWeight={700}>Grand Total</Typography>
               <Typography variant="h6" fontWeight={700} color="primary.main">₹{finalTotal.toFixed(2)}</Typography>
             </Box>
@@ -282,7 +282,7 @@ export default function BillingPage() {
               sx={{ mb: 2 }}
             />
             {amountPaid && (
-              <Box sx={{ display: 'flex', justifyContent: 'between', mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Typography color="text.secondary">Change Due</Typography>
                 <Typography variant="subtitle1" fontWeight={700}>₹{change.toFixed(2)}</Typography>
               </Box>

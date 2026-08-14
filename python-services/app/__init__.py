@@ -1,1 +1,1 @@
-# H-Mart Analytics App
+# BizGrow Analytics App

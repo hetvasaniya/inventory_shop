@@ -92,7 +92,7 @@ export default function CouponPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>Coupons & Promotions</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={handleOpenAdd}>
           Create Coupon
@@ -127,8 +127,10 @@ export default function CouponPage() {
                   <TableCell align="right">₹{coupon.minOrderAmount || 0}</TableCell>
                   <TableCell>{new Date(coupon.validUntil).toLocaleDateString()}</TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => handleOpenEdit(coupon)} color="primary"><Edit /></IconButton>
-                    <IconButton onClick={() => handleDelete(coupon._id)} color="error"><Delete /></IconButton>
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                      <IconButton onClick={() => handleOpenEdit(coupon)} color="primary" size="small"><Edit fontSize="small" /></IconButton>
+                      <IconButton onClick={() => handleDelete(coupon._id)} color="error" size="small"><Delete fontSize="small" /></IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))

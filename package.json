@@ -1,7 +1,7 @@
 {
-  "name": "h-mart",
+  "name": "bizgrow",
   "version": "1.0.0",
-  "description": "H-Mart – Intelligent Retail Management & Billing System",
+  "description": "BizGrow — Business Growth, Billing & Inventory Management",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",

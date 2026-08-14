@@ -102,10 +102,10 @@ const Sidebar = ({ open, mobileOpen, onToggle, onMobileClose }) => {
                   lineHeight: 1.2,
                 }}
               >
-                H-Mart
+                BizGrow
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-                Retail Management
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', display: 'block', whiteSpace: 'nowrap' }}>
+                Business Growth & Billing
               </Typography>
             </Box>
           </Box>
@@ -151,6 +151,8 @@ const Sidebar = ({ open, mobileOpen, onToggle, onMobileClose }) => {
                     minWidth: 0,
                     mr: open ? 2 : 'auto',
                     justifyContent: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
                     color: isActive ? theme.palette.primary.main : 'text.secondary',
                   }}
                 >

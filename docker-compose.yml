@@ -1,7 +1,7 @@
 version: '3.8'
 
 # ─────────────────────────────────────────────────────────────────────────────
-# H-Mart Docker Compose
+# BizGrow Docker Compose
 #
 # TWO MONGODB PROFILES:
 #
@@ -13,9 +13,9 @@ version: '3.8'
 #      Starts: mongo-rs (replica set), server, client, python-service
 #      Command: docker compose --profile replica up
 #      After first start, run once to initialise the replica set:
-#        docker exec hmart-mongo-rs mongosh --eval "rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo-rs:27017'}]})"
+#        docker exec bizgrow-mongo-rs mongosh --eval "rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo-rs:27017'}]})"
 #      Then update MONGODB_URI in server environment below to:
-#        mongodb://mongo-rs:27017/hmart?replicaSet=rs0
+#        mongodb://mongo-rs:27017/bizgrow?replicaSet=rs0
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -23,15 +23,15 @@ services:
   # ── Standalone MongoDB (default — works without replica set) ────────────────
   mongodb:
     image: mongo:7.0
-    container_name: hmart-mongodb
+    container_name: bizgrow-mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     environment:
-      MONGO_INITDB_DATABASE: hmart
+      MONGO_INITDB_DATABASE: bizgrow
     networks:
-      - hmart-network
+      - bizgrow-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
@@ -42,7 +42,7 @@ services:
   # ── Replica-set MongoDB (optional — enables multi-document transactions) ─────
   mongo-rs:
     image: mongo:7.0
-    container_name: hmart-mongo-rs
+    container_name: bizgrow-mongo-rs
     profiles:
       - replica
     command: ["--replSet", "rs0", "--bind_ip_all"]
@@ -51,7 +51,7 @@ services:
     volumes:
       - mongodb_rs_data:/data/db
     networks:
-      - hmart-network
+      - bizgrow-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
@@ -64,17 +64,17 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: hmart-server
+    container_name: bizgrow-server
     ports:
       - "5000:5000"
     environment:
       - NODE_ENV=production
       # Default: standalone MongoDB (no transactions)
-      - MONGODB_URI=mongodb://mongodb:27017/hmart
+      - MONGODB_URI=mongodb://mongodb:27017/bizgrow
       # For replica set transactions, change the line above to:
-      # - MONGODB_URI=mongodb://mongo-rs:27017/hmart?replicaSet=rs0
-      - JWT_SECRET=${JWT_SECRET:-hmart_super_secret_key_change_in_production_2026}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-hmart_refresh_secret_key_change_in_production_2026}
+      # - MONGODB_URI=mongodb://mongo-rs:27017/bizgrow?replicaSet=rs0
+      - JWT_SECRET=${JWT_SECRET:-bizgrow_super_secret_key_change_in_production_2026}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-bizgrow_refresh_secret_key_change_in_production_2026}
       - JWT_EXPIRE=15m
       - JWT_REFRESH_EXPIRE=7d
       - PYTHON_SERVICE_URL=http://python-service:8000
@@ -85,7 +85,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - hmart-network
+      - bizgrow-network
     restart: unless-stopped
 
   # ── React Frontend ───────────────────────────────────────────────────────────
@@ -93,13 +93,13 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: hmart-client
+    container_name: bizgrow-client
     ports:
       - "80:80"
     depends_on:
       - server
     networks:
-      - hmart-network
+      - bizgrow-network
     restart: unless-stopped
 
   # ── Python Analytics Service ─────────────────────────────────────────────────
@@ -107,13 +107,13 @@ services:
     build:
       context: ./python-services
       dockerfile: Dockerfile
-    container_name: hmart-python
+    container_name: bizgrow-python
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/hmart
+      - MONGODB_URI=mongodb://mongodb:27017/bizgrow
     networks:
-      - hmart-network
+      - bizgrow-network
     restart: unless-stopped
 
 volumes:
@@ -121,5 +121,5 @@ volumes:
   mongodb_rs_data:
 
 networks:
-  hmart-network:
+  bizgrow-network:
     driver: bridge

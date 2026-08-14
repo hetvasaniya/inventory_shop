@@ -147,8 +147,10 @@ export default function BillHistoryPage() {
                   <TableCell align="right">{bill.items?.length || 0} items</TableCell>
                   <TableCell align="right" fontWeight={700}>₹{bill.grandTotal.toFixed(2)}</TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => handleOpenDetail(bill)} color="primary"><Visibility /></IconButton>
-                    <IconButton onClick={() => handlePrint(bill._id)} color="secondary"><Print /></IconButton>
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                      <IconButton onClick={() => handleOpenDetail(bill)} color="primary" size="small"><Visibility fontSize="small" /></IconButton>
+                      <IconButton onClick={() => handlePrint(bill._id)} color="secondary" size="small"><Print fontSize="small" /></IconButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -215,31 +217,31 @@ export default function BillHistoryPage() {
               </TableContainer>
 
               <Box sx={{ width: '100%', maxWidth: 300, ml: 'auto' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                   <Typography color="text.secondary">Subtotal (excl. Tax)</Typography>
                   <Typography>₹{selectedBill.subtotal.toFixed(2)}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                   <Typography color="text.secondary">Total CGST</Typography>
                   <Typography>₹{selectedBill.totalCgst.toFixed(2)}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                   <Typography color="text.secondary">Total SGST</Typography>
                   <Typography>₹{selectedBill.totalSgst.toFixed(2)}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                   <Typography color="text.secondary">Discount</Typography>
                   <Typography sx={{ color: 'success.main' }}>- ₹{selectedBill.discount.toFixed(2)}</Typography>
                 </Box>
                 <Divider sx={{ my: 1 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'between' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="subtitle1" fontWeight={700}>Grand Total</Typography>
                   <Typography variant="subtitle1" fontWeight={700} color="primary.main">₹{selectedBill.grandTotal.toFixed(2)}</Typography>
                 </Box>
               </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 2, justifyContent: 'between' }}>
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <DialogActions sx={{ p: 2, justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                 <TextField
                   placeholder="Customer Email"
                   size="small"
@@ -249,7 +251,7 @@ export default function BillHistoryPage() {
                 <Button variant="outlined" startIcon={<Email />} onClick={handleShareEmail}>Email Bill</Button>
                 <Button variant="outlined" color="success" startIcon={<WhatsApp />} onClick={handleShareWhatsApp}>WhatsApp</Button>
               </Box>
-              <Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                 <Button onClick={handleCloseDetail}>Close</Button>
                 <Button variant="contained" startIcon={<Print />} onClick={() => handlePrint(selectedBill._id)}>Reprint Invoice</Button>
               </Box>

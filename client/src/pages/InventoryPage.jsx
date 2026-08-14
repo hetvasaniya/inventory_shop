@@ -94,7 +94,7 @@ export default function InventoryPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" fontWeight={700}>Inventory Management</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={handleOpenAdd}>
           Add Product
@@ -197,8 +197,10 @@ export default function InventoryPage() {
                     </TableCell>
                     <TableCell>{getStockStatus(product.stock, product.minStockLevel)}</TableCell>
                     <TableCell align="center">
-                      <IconButton onClick={() => handleOpenEdit(product)} color="primary"><Edit /></IconButton>
-                      <IconButton onClick={() => handleDelete(product._id)} color="error"><Delete /></IconButton>
+                      <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                        <IconButton onClick={() => handleOpenEdit(product)} color="primary" size="small"><Edit fontSize="small" /></IconButton>
+                        <IconButton onClick={() => handleDelete(product._id)} color="error" size="small"><Delete fontSize="small" /></IconButton>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))

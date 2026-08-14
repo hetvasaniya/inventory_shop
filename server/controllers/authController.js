@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Shop = require('../models/Shop');
+const { sendPasswordResetEmail, sendWelcomeEmail } = require('../utils/emailService');
+
 
 // GSTIN regex — same as Shop model, centralised here for pre-flight validation
 const GSTIN_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -287,6 +289,24 @@ const registerShopAndOwner = async (req, res, next) => {
     console.log('[REGISTER] User Updated with shop ref and refresh token');
     console.log('[REGISTER] Transaction Committed ✓');
 
+    // Send Welcome Email to newly registered user
+    try {
+      sendWelcomeEmail({
+        recipientEmail: user.email,
+        userName: user.name,
+        shopName: shop.shopName,
+        gstin: shop.gstin,
+      })
+        .then((info) => {
+          console.log(`[REGISTER] Welcome email sent successfully to ${user.email} (MessageId: ${info.messageId || 'sent'})`);
+        })
+        .catch((mailErr) => {
+          console.error('[REGISTER] Failed to send welcome email:', mailErr.message);
+        });
+    } catch (mailErr) {
+      console.error('[REGISTER] Error dispatching welcome email:', mailErr.message);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Shop registered and owner account created successfully.',
@@ -562,6 +582,131 @@ const toggleEmployee = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/auth/forgot-password
+ * Send a 6-digit verification code to the user's email.
+ */
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email address.',
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'Account is deactivated. Please contact support.',
+      });
+    }
+
+    // Generate random 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Expiration: 10 minutes from now
+    const resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.resetPasswordCode = resetCode;
+    user.resetPasswordExpire = resetPasswordExpire;
+    await user.save();
+
+    console.log(`[FORGOT-PASSWORD] Password reset code generated and sent to ${user.email}`);
+
+    // Send HTML verification email
+    try {
+      await sendPasswordResetEmail(user.email, user.name, resetCode);
+      return res.json({
+        success: true,
+        message: 'A 6-digit verification code has been sent to your email.',
+      });
+    } catch (mailErr) {
+      console.error('[FORGOT-PASSWORD] Failed to send email via SMTP:', mailErr.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Unable to send verification email. Please check your SMTP configuration or try again later.',
+        error: mailErr.message,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/auth/verify-code
+ * Verify the 6-digit code entered by user.
+ */
+const verifyResetCode = async (req, res, next) => {
+  try {
+    const { email, code } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (
+      !user ||
+      !user.resetPasswordCode ||
+      user.resetPasswordCode !== code.trim() ||
+      !user.resetPasswordExpire ||
+      user.resetPasswordExpire < new Date()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired 6-digit verification code.',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Verification code authenticated successfully.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password after verification code is authenticated.
+ */
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (
+      !user ||
+      !user.resetPasswordCode ||
+      user.resetPasswordCode !== code.trim() ||
+      !user.resetPasswordExpire ||
+      user.resetPasswordExpire < new Date()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired 6-digit verification code. Please request a new code.',
+      });
+    }
+
+    // Set new password (pre-save hook in User model hashes passwordHash)
+    user.passwordHash = newPassword;
+    user.resetPasswordCode = null;
+    user.resetPasswordExpire = null;
+    user.refreshToken = null; // Invalidate existing sessions
+    await user.save();
+
+    console.log(`[RESET-PASSWORD] Password successfully updated for user ${user.email}`);
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully. You can now login with your new password.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerShopAndOwner,
   login,
@@ -571,4 +716,8 @@ module.exports = {
   createEmployee,
   getEmployees,
   toggleEmployee,
+  forgotPassword,
+  verifyResetCode,
+  resetPassword,
 };
+
