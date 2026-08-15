@@ -1,11 +1,16 @@
 const path = require('path');
 const fs = require('fs');
 
-const envPath = fs.existsSync(path.join(__dirname, '.env'))
-  ? path.join(__dirname, '.env')
-  : path.join(__dirname, '../.env');
+const envPathLocal = path.join(__dirname, '.env');
+const envPathParent = path.join(__dirname, '../.env');
 
-require('dotenv').config({ path: envPath });
+if (fs.existsSync(envPathLocal)) {
+  require('dotenv').config({ path: envPathLocal });
+} else if (fs.existsSync(envPathParent)) {
+  require('dotenv').config({ path: envPathParent });
+} else {
+  console.log('[ENV] No local .env file found. Relying on host environment variables.');
+}
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
@@ -32,6 +37,13 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://inventory-shop-lovat.vercel.app"
 ];
+
+if (process.env.CLIENT_URL) {
+  const normalizedClientUrl = process.env.CLIENT_URL.replace(/\/$/, "");
+  if (!allowedOrigins.includes(normalizedClientUrl)) {
+    allowedOrigins.push(normalizedClientUrl);
+  }
+}
 
 app.use(cors({
   origin: function (origin, callback) {

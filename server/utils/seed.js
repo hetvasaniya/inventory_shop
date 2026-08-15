@@ -1,5 +1,14 @@
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+const fs = require('fs');
+
+const envPathLocal = path.join(__dirname, '../.env');
+const envPathParent = path.join(__dirname, '../../.env');
+
+if (fs.existsSync(envPathLocal)) {
+  require('dotenv').config({ path: envPathLocal });
+} else if (fs.existsSync(envPathParent)) {
+  require('dotenv').config({ path: envPathParent });
+}
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const connectDB = require('../config/db');

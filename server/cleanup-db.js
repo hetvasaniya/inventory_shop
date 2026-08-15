@@ -15,10 +15,14 @@
  */
 const path = require('path');
 const fs = require('fs');
-const envPath = fs.existsSync(path.join(__dirname, '.env'))
-  ? path.join(__dirname, '.env')
-  : path.join(__dirname, '../.env');
-require('dotenv').config({ path: envPath });
+const envPathLocal = path.join(__dirname, '.env');
+const envPathParent = path.join(__dirname, '../.env');
+
+if (fs.existsSync(envPathLocal)) {
+  require('dotenv').config({ path: envPathLocal });
+} else if (fs.existsSync(envPathParent)) {
+  require('dotenv').config({ path: envPathParent });
+}
 const mongoose = require('mongoose');
 
 async function cleanup() {

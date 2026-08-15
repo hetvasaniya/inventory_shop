@@ -11,19 +11,8 @@ const createTransporter = () => {
   // Clean up any spaces from App Password (e.g. "abcd efgh ijkl mnop" -> "abcdefghijklmnop")
   const pass = (process.env.SMTP_PASS || '').replace(/\s+/g, '');
 
-  if (host.includes('gmail.com')) {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user,
-        pass,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-  }
-
+  // For production stability and cloud hosting compatibility, we use standard SMTP options.
+  // This avoids service-level presets like 'service: gmail' that are often blocked on cloud IPs.
   return nodemailer.createTransport({
     host,
     port,
@@ -51,7 +40,7 @@ const createTransporter = () => {
  */
 const sendEmail = async ({ to, subject, text, html, attachments }) => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn('⚠ Email not sent: SMTP_USER or SMTP_PASS missing in server/.env.');
+    console.warn('⚠ Email not sent: SMTP_USER or SMTP_PASS missing in environment variables.');
     return { accepted: [], rejected: [to], skipped: true };
   }
 
@@ -125,10 +114,13 @@ const sendBillEmail = async (recipientEmail, pdfBuffer, billNumber, shopName) =>
  * @returns {Promise<object>}
  */
 const sendPasswordResetEmail = async (recipientEmail, userName, resetCode) => {
+  const clientUrl = (process.env.CLIENT_URL || 'http://localhost:3000').replace(/\/$/, '');
+  const resetUrl = `${clientUrl}/login`;
+
   return sendEmail({
     to: recipientEmail,
     subject: `${resetCode} is your BizGrow Password Reset Code`,
-    text: `Hello ${userName || 'User'},\n\nYour password reset verification code for BizGrow is: ${resetCode}\n\nThis code will expire in 10 minutes. If you did not request a password reset, please ignore this email.\n\nRegards,\nBizGrow Team`,
+    text: `Hello ${userName || 'User'},\n\nYour password reset verification code for BizGrow is: ${resetCode}\n\nYou can enter this code on the password reset page: ${resetUrl}\n\nThis code will expire in 10 minutes. If you did not request a password reset, please ignore this email.\n\nRegards,\nBizGrow Team`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -158,6 +150,13 @@ const sendPasswordResetEmail = async (recipientEmail, userName, resetCode) => {
                 <div style="display: inline-block; background-color: #F0F4F9; border: 2px dashed #1976D2; border-radius: 10px; padding: 18px 30px;">
                   <span style="font-family: 'Courier New', Courier, monospace; font-size: 34px; font-weight: 800; color: #1976D2; letter-spacing: 10px;">${resetCode}</span>
                 </div>
+              </div>
+
+              <!-- Reset CTA Button -->
+              <div style="text-align: center; margin: 25px 0;">
+                <a href="${resetUrl}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%); color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 700; padding: 14px 32px; border-radius: 8px; box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);">
+                  🔑 Go to Password Reset Page
+                </a>
               </div>
 
               <!-- Important Note -->
@@ -211,7 +210,7 @@ const generateWhatsAppLink = (phone, billNumber, grandTotal, shopName) => {
  * @returns {Promise<object>}
  */
 const sendWelcomeEmail = async ({ recipientEmail, userName, shopName, gstin }) => {
-  const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+  const clientUrl = (process.env.CLIENT_URL || 'http://localhost:3000').replace(/\/$/, '');
   const loginUrl = `${clientUrl}/login`;
 
   return sendEmail({
@@ -313,6 +312,35 @@ const sendWelcomeEmail = async ({ recipientEmail, userName, shopName, gstin }) =
   });
 };
 
-module.exports = { sendEmail, sendBillEmail, sendPasswordResetEmail, sendWelcomeEmail, generateWhatsAppLink };
+/**
+ * Safely verify the SMTP connection on startup.
+ * Logs status clearly but never leaks credentials or secrets.
+ */
+const verifySmtpConnection = async () => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('⚠ SMTP Connection Check: SMTP_USER or SMTP_PASS environment variable is missing.');
+    return false;
+  }
+  try {
+    const transporter = createTransporter();
+    await transporter.verify();
+    console.log('✔ SMTP connection verified successfully. Ready to send emails.');
+    return true;
+  } catch (error) {
+    console.error('✗ SMTP connection verification failed:', error.message);
+    if (error.code) {
+      console.error(`  SMTP Error Code: ${error.code}`);
+    }
+    // We explicitly avoid printing the error object itself or error.config to ensure no passwords/secrets leak.
+    return false;
+  }
+};
+
+// Auto-run connection check on startup (non-blocking)
+verifySmtpConnection().catch((err) => {
+  console.error('✗ SMTP connection auto-verification error:', err.message);
+});
+
+module.exports = { sendEmail, sendBillEmail, sendPasswordResetEmail, sendWelcomeEmail, generateWhatsAppLink, verifySmtpConnection };
 
 
