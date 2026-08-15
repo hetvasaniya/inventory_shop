@@ -24,6 +24,7 @@ const errorHandler = require('./middleware/errorHandler');
 connectDB();
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 
 // Initialize Socket.io
