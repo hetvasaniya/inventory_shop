@@ -66,4 +66,16 @@ router.post(
   authController.logout
 );
 
+router.put(
+  '/profile',
+  protect,
+  authController.updateProfile
+);
+
+router.put(
+  '/shop',
+  protect,
+  authController.updateShop
+);
+
 module.exports = router;

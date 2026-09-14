@@ -29,7 +29,19 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: mode === 'dark' ? '#1E3A5F' : '#FFFCF5',
+              color: mode === 'dark' ? '#F1F5F9' : '#1A1208',
+              border: mode === 'dark' ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(90,60,10,0.15)',
+              borderRadius: '10px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            },
+          }}
+        />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />

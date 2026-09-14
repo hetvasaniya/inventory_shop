@@ -8,6 +8,8 @@ const useAuth = () => {
     isAuthenticated,
     login,
     logout,
+    setUser,
+    setShop,
   } = useAuthStore();
 
   const isOwner = user?.role === 'owner';
@@ -26,6 +28,8 @@ const useAuth = () => {
     hasManageAccess,
     login,
     logout,
+    setUser,
+    setShop,
   };
 };
 

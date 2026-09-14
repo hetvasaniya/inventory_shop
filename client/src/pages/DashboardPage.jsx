@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import {
-  Box, Typography, Grid, Paper, Card, CardContent, Button, Divider, List, ListItem, ListItemText, ListItemIcon
+  Box, Typography, Grid, Paper, Card, CardContent, Button, Divider, List, ListItem, ListItemText, ListItemIcon, useTheme, alpha
 } from '@mui/material';
-import { PointOfSale, Inventory, LocalShipping, Warning, ArrowForward, AccessTime, TrendingUp } from '@mui/icons-material';
+import { PointOfSale, Inventory, LocalShipping, Warning, ArrowForward, AccessTime, TrendingUp, WavingHand } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import api from '../services/api';
+import useAuth from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
+  const theme = useTheme();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [salesTrend, setSalesTrend] = useState([]);
   const [lowStockList, setLowStockList] = useState([]);
@@ -33,14 +36,33 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
   return (
     <Box>
-      <Typography variant="h4" fontWeight={800} mb={1}>Dashboard</Typography>
-      <Typography variant="body2" color="text.secondary" mb={4}>
-        Real-time shop status overview and inventory metrics.
-      </Typography>
+      {/* Welcome Banner */}
+      <Box
+        sx={{
+          mb: 4, p: 3, borderRadius: 3,
+          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.secondary.main, 0.08)} 100%)`,
+          border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+          display: 'flex', alignItems: 'center', gap: 2,
+        }}
+      >
+        <WavingHand sx={{ fontSize: 36, color: '#F59E0B' }} />
+        <Box>
+          <Typography variant="h5" fontWeight={800} color="text.primary">
+            {greeting}, {user?.name?.split(' ')[0] || 'there'}! 👋
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.3}>
+            Here's a live snapshot of your store today. Let's have a great day!
+          </Typography>
+        </Box>
+      </Box>
 
       {/* Main Stats Row */}
+
       <Grid container spacing={3} mb={4}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #4CAF50' }}>
@@ -104,7 +126,7 @@ export default function DashboardPage() {
                 </defs>
                 <XAxis dataKey="date" stroke="#90A4AE" />
                 <YAxis stroke="#90A4AE" />
-                <Tooltip contentStyle={{ backgroundColor: '#112233', border: 'none', borderRadius: 8 }} />
+                <Tooltip contentStyle={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: 8, color: theme.palette.text.primary }} />
                 <Area type="monotone" dataKey="revenue" name="Revenue (₹)" stroke="#1976D2" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
               </AreaChart>
             </ResponsiveContainer>

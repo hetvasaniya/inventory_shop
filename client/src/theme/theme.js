@@ -16,17 +16,18 @@ export const getTheme = (mode) => createTheme({
       contrastText: '#FFFFFF',
     },
     background: {
-      default: mode === 'dark' ? '#0A1929' : '#F8FAFC',
-      paper: mode === 'dark' ? '#112233' : '#FFFFFF',
+      default: mode === 'dark' ? '#0A1929' : '#F5EDD8',
+      paper:   mode === 'dark' ? '#112233' : '#FFFCF5',
     },
     text: {
-      primary: mode === 'dark' ? '#F1F5F9' : '#0F172A',
-      secondary: mode === 'dark' ? '#94A3B8' : '#64748B',
+      primary:   mode === 'dark' ? '#F1F5F9' : '#1A1208',
+      secondary: mode === 'dark' ? '#94A3B8' : '#5C4A22',
     },
     success: { main: '#10B981' },
     warning: { main: '#F59E0B' },
     error: { main: '#EF4444' },
-    divider: mode === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
+    divider: mode === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(90, 60, 10, 0.12)',
+
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -110,7 +111,7 @@ export const getTheme = (mode) => createTheme({
         },
         head: {
           fontWeight: 700,
-          backgroundColor: mode === 'dark' ? 'rgba(255, 255, 255, 0.04)' : '#F1F5F9',
+          backgroundColor: mode === 'dark' ? 'rgba(255, 255, 255, 0.04)' : '#EDE0C4',
         },
       },
     },

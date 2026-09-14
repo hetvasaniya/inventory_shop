@@ -707,6 +707,57 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+/**
+ * PUT /api/auth/profile
+ * Update own profile (name, phone)
+ */
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phone } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    if (name && name.trim()) user.name = name.trim();
+    if (phone !== undefined) user.phone = phone.trim();
+
+    await user.save();
+    res.json({ success: true, message: 'Profile updated successfully', data: { user } });
+  } catch (err) {
+    console.error('[UPDATE_PROFILE]', err.message);
+    next(err);
+  }
+};
+
+/**
+ * PUT /api/auth/shop
+ * Update shop settings (shopName, phone, email, address)
+ */
+const updateShop = async (req, res, next) => {
+  try {
+    const { shopName, phone, email, address } = req.body;
+    const shop = await Shop.findById(req.user.shop);
+    if (!shop) return res.status(404).json({ success: false, message: 'Shop not found' });
+
+    if (shopName && shopName.trim()) shop.shopName = shopName.trim();
+    if (phone !== undefined) shop.phone = phone.trim();
+    if (email !== undefined) shop.email = email.trim().toLowerCase();
+    if (address) {
+      shop.address = {
+        street: address.street !== undefined ? address.street : shop.address.street,
+        city: address.city !== undefined ? address.city : shop.address.city,
+        state: address.state !== undefined ? address.state : shop.address.state,
+        pincode: address.pincode !== undefined ? address.pincode : shop.address.pincode,
+      };
+    }
+
+    await shop.save();
+    res.json({ success: true, message: 'Shop settings updated successfully', data: { shop } });
+  } catch (err) {
+    console.error('[UPDATE_SHOP]', err.message);
+    next(err);
+  }
+};
+
 module.exports = {
   registerShopAndOwner,
   login,
@@ -719,5 +770,7 @@ module.exports = {
   forgotPassword,
   verifyResetCode,
   resetPassword,
+  updateProfile,
+  updateShop,
 };
 
