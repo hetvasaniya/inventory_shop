@@ -73,6 +73,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/bills', require('./routes/billRoutes'));
 app.use('/api/barcode', require('./routes/barcodeRoutes'));
 app.use('/api/suppliers', require('./routes/supplierRoutes'));
+app.use('/api/purchase-orders', require('./routes/purchaseOrderRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 

@@ -12,6 +12,7 @@ import {
   Divider,
   Badge,
   Tooltip,
+  Chip,
   useTheme,
   alpha,
 } from '@mui/material';
@@ -23,17 +24,20 @@ import {
   Logout,
   Person,
   StorefrontRounded,
+  PointOfSale,
+  AdminPanelSettings,
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { useThemeStore } from '../../store/themeStore';
 import { NAVBAR_HEIGHT } from '../../utils/constants';
+import toast from 'react-hot-toast';
 
 const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { user, shop, logout } = useAuth();
+  const { user, shop, logout, isWorkerMode, setSessionMode } = useAuth();
   const { mode, toggleTheme } = useThemeStore();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -81,6 +85,36 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
           </Typography>
         </Box>
 
+        {/* Session Mode Chip / Switch */}
+        <Chip
+          icon={isWorkerMode ? <PointOfSale fontSize="small" /> : <AdminPanelSettings fontSize="small" />}
+          label={isWorkerMode ? 'Worker Mode (POS Only)' : 'Owner Mode'}
+          color={isWorkerMode ? 'warning' : 'primary'}
+          variant={isWorkerMode ? 'filled' : 'outlined'}
+          size="small"
+          onClick={() => {
+            if (user?.role === 'owner') {
+              const newMode = isWorkerMode ? 'owner' : 'worker';
+              setSessionMode(newMode);
+              if (newMode === 'worker') {
+                toast.success('Switched to Worker Mode (Billing POS Only)');
+                navigate('/billing');
+              } else {
+                toast.success('Switched to Owner Mode (Full Access)');
+                navigate('/');
+              }
+            } else {
+              toast.error('Only owner accounts can switch modes');
+            }
+          }}
+          sx={{
+            fontWeight: 600,
+            mr: 1.5,
+            cursor: user?.role === 'owner' ? 'pointer' : 'default',
+            '&:hover': user?.role === 'owner' ? { opacity: 0.9 } : {},
+          }}
+        />
+
         {/* Theme Toggle */}
         <Tooltip title={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}>
           <IconButton onClick={toggleTheme} sx={{ mr: 1 }}>
@@ -89,15 +123,6 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
             ) : (
               <DarkMode sx={{ color: '#5C6BC0' }} />
             )}
-          </IconButton>
-        </Tooltip>
-
-        {/* Notifications */}
-        <Tooltip title="Notifications">
-          <IconButton sx={{ mr: 1 }}>
-            <Badge badgeContent={0} color="error">
-              <Notifications />
-            </Badge>
           </IconButton>
         </Tooltip>
 
@@ -133,7 +158,7 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
               {user?.name || 'User'}
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-              {user?.role || 'Staff'}
+              {isWorkerMode ? 'Cashier / Worker' : user?.role || 'Owner'}
             </Typography>
           </Box>
         </Box>

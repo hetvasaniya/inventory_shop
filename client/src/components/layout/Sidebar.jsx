@@ -28,6 +28,8 @@ import {
   Settings,
   ChevronLeft,
   StorefrontRounded,
+  ShoppingCart,
+  BadgeOutlined,
 } from '@mui/icons-material';
 import { DRAWER_WIDTH, DRAWER_WIDTH_COLLAPSED, SIDEBAR_MENU } from '../../utils/constants';
 import useAuth from '../../hooks/useAuth';
@@ -39,6 +41,7 @@ const iconMap = {
   Receipt: <Receipt />,
   QrCode2: <QrCode2 />,
   LocalShipping: <LocalShipping />,
+  ShoppingCart: <ShoppingCart />,
   LocalOffer: <LocalOffer />,
   TrendingUp: <TrendingUp />,
   Assessment: <Assessment />,
@@ -50,7 +53,7 @@ const Sidebar = ({ open, mobileOpen, onToggle, onMobileClose }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
   const navigate = useNavigate();
-  const { isOwner } = useAuth();
+  const { isOwner, isWorkerMode } = useAuth();
 
   const currentWidth = open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED;
 
@@ -59,9 +62,12 @@ const Sidebar = ({ open, mobileOpen, onToggle, onMobileClose }) => {
     if (isMobile) onMobileClose();
   };
 
-  const filteredMenu = SIDEBAR_MENU.filter(
-    (item) => !item.ownerOnly || isOwner
-  );
+  const filteredMenu = SIDEBAR_MENU.filter((item) => {
+    if (isWorkerMode) {
+      return item.workerAllowed;
+    }
+    return true;
+  });
 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -180,6 +186,20 @@ const Sidebar = ({ open, mobileOpen, onToggle, onMobileClose }) => {
           );
         })}
       </List>
+
+      {open && (
+        <Box sx={{ p: 2, m: 1, borderRadius: 2, bgcolor: isWorkerMode ? 'warning.light' : 'action.hover', color: isWorkerMode ? 'warning.contrastText' : 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BadgeOutlined fontSize="small" />
+          <Box>
+            <Typography variant="caption" fontWeight={700} display="block">
+              {isWorkerMode ? 'Worker / POS Mode' : 'Owner / Full Access'}
+            </Typography>
+            <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
+              {isWorkerMode ? 'Billing & Receipts only' : 'All management unlocked'}
+            </Typography>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 

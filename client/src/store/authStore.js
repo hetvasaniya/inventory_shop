@@ -9,15 +9,19 @@ export const useAuthStore = create(
       refreshToken: null,
       shop: null,
       isAuthenticated: false,
+      sessionMode: 'owner', // 'owner' (full access) or 'worker' (billing only)
 
-      login: (user, token, shop, refreshToken) =>
+      login: (user, token, shop, refreshToken, sessionMode = 'owner') =>
         set({
           user,
           token,
           refreshToken: refreshToken || null,
           shop,
           isAuthenticated: true,
+          sessionMode: user?.role === 'employee' ? 'worker' : sessionMode,
         }),
+
+      setSessionMode: (sessionMode) => set({ sessionMode }),
 
       setTokens: (token, refreshToken) =>
         set({ token, refreshToken }),
@@ -33,6 +37,7 @@ export const useAuthStore = create(
           refreshToken: null,
           shop: null,
           isAuthenticated: false,
+          sessionMode: 'owner',
         }),
     }),
     {

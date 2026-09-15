@@ -9,7 +9,7 @@ const createProduct = async (req, res, next) => {
     const {
       name, category, subcategory, brand,
       costPrice, sellingPrice, stock, unit,
-      minStockLevel, gstRate, hsnCode, expiryDate, supplier,
+      minStockLevel, targetStockLevel, gstRate, hsnCode, expiryDate, supplier,
     } = req.body;
 
     // Check for duplicate product (same name, category, brand in same shop)
@@ -39,6 +39,7 @@ const createProduct = async (req, res, next) => {
       stock: stock || 0,
       unit: unit || 'pcs',
       minStockLevel: minStockLevel != null ? minStockLevel : 10,
+      targetStockLevel: targetStockLevel != null ? targetStockLevel : 50,
       gstRate: gstRate != null ? gstRate : 18,
       hsnCode: hsnCode || '',
       expiryDate: expiryDate || null,
@@ -217,7 +218,7 @@ const updateProduct = async (req, res, next) => {
     const allowedFields = [
       'name', 'category', 'subcategory', 'brand',
       'costPrice', 'sellingPrice', 'stock', 'unit',
-      'minStockLevel', 'gstRate', 'hsnCode', 'expiryDate',
+      'minStockLevel', 'targetStockLevel', 'gstRate', 'hsnCode', 'expiryDate',
       'supplier', 'isActive',
     ];
 
@@ -358,7 +359,7 @@ const getLowStockProducts = async (req, res, next) => {
       $expr: { $lte: ['$stock', '$minStockLevel'] },
     })
       .sort({ stock: 1 })
-      .select('name sku stock minStockLevel category supplier')
+      .select('name sku stock minStockLevel targetStockLevel category supplier')
       .populate('supplier', 'name phone');
 
     res.json({

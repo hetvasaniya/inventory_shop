@@ -16,6 +16,11 @@ import {
   StepLabel,
   Alert,
   CircularProgress,
+  Card,
+  CardContent,
+  CardActionArea,
+  Grid,
+  Divider,
 } from '@mui/material';
 import {
   Visibility,
@@ -25,6 +30,9 @@ import {
   MarkEmailRead as EmailIcon,
   Key as KeyIcon,
   CheckCircle as CheckCircleIcon,
+  AdminPanelSettings as AdminIcon,
+  PointOfSale as PosIcon,
+  Security as SecurityIcon,
 } from '@mui/icons-material';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -49,6 +57,10 @@ export default function LoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetError, setResetError] = useState('');
 
+  // Login Mode Selection State
+  const [openModeDialog, setOpenModeDialog] = useState(false);
+  const [pendingAuth, setPendingAuth] = useState(null);
+
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
 
@@ -58,18 +70,47 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await api.post('/auth/login', { email, password });
-      login(
-        res.data.data.user,
-        res.data.data.accessToken,
-        res.data.data.shop,
-        res.data.data.refreshToken
-      );
-      toast.success('Logged in successfully');
-      navigate('/');
+      const authData = res.data.data;
+
+      // If user is employee/cashier, log straight into worker mode
+      if (authData.user.role === 'employee' || authData.user.role === 'cashier') {
+        login(
+          authData.user,
+          authData.accessToken,
+          authData.shop,
+          authData.refreshToken,
+          'worker'
+        );
+        toast.success('Logged in as Worker (Billing Mode)');
+        navigate('/billing');
+      } else {
+        // Owner or manager: show secondary modal to choose session mode
+        setPendingAuth(authData);
+        setOpenModeDialog(true);
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectMode = (mode) => {
+    if (!pendingAuth) return;
+    login(
+      pendingAuth.user,
+      pendingAuth.accessToken,
+      pendingAuth.shop,
+      pendingAuth.refreshToken,
+      mode
+    );
+    setOpenModeDialog(false);
+    if (mode === 'worker') {
+      toast.success('Switched to Worker (Billing Only) Counter');
+      navigate('/billing');
+    } else {
+      toast.success('Welcome! Full Store Management unlocked.');
+      navigate('/');
     }
   };
 
@@ -476,6 +517,145 @@ export default function LoginPage() {
               </Button>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Secondary Login Session Mode Modal */}
+      <Dialog
+        open={openModeDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3, p: 1 },
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pt: 2, pb: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+            <Box
+              sx={{
+                width: 52,
+                height: 52,
+                borderRadius: '50%',
+                bgcolor: 'primary.light',
+                color: 'primary.contrastText',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SecurityIcon sx={{ fontSize: 32 }} />
+            </Box>
+          </Box>
+          <Typography variant="h5" fontWeight={800} color="text.primary">
+            Select Work Session Mode
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>
+            Choose how you want to log in for this session:
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent sx={{ py: 2 }}>
+          <Grid container spacing={2}>
+            {/* Owner Full Access Mode */}
+            <Grid item xs={12}>
+              <Card
+                variant="outlined"
+                sx={{
+                  borderRadius: 2.5,
+                  transition: 'all 0.2s ease',
+                  border: '2px solid transparent',
+                  borderColor: 'primary.main',
+                  bgcolor: (theme) =>
+                    theme.palette.mode === 'dark'
+                      ? 'rgba(25, 118, 210, 0.12)'
+                      : 'rgba(25, 118, 210, 0.04)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 3,
+                  },
+                }}
+              >
+                <CardActionArea
+                  onClick={() => handleSelectMode('owner')}
+                  sx={{ p: 2.5 }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        borderRadius: 2,
+                        bgcolor: 'primary.main',
+                        color: '#fff',
+                        display: 'flex',
+                      }}
+                    >
+                      <AdminIcon sx={{ fontSize: 32 }} />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="h6" fontWeight={700} color="primary.main">
+                          Owner / Full Store Access
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" mt={0.5}>
+                        Full management access: Dashboard KPIs, Inventory, Purchase Orders, Restocking, Suppliers, Analytics, Coupons, Sticker Printing & Settings.
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardActionArea>
+              </Card>
+            </Grid>
+
+            {/* Worker / POS Billing Counter Mode */}
+            <Grid item xs={12}>
+              <Card
+                variant="outlined"
+                sx={{
+                  borderRadius: 2.5,
+                  transition: 'all 0.2s ease',
+                  border: '2px solid transparent',
+                  borderColor: 'warning.main',
+                  bgcolor: (theme) =>
+                    theme.palette.mode === 'dark'
+                      ? 'rgba(255, 152, 0, 0.12)'
+                      : 'rgba(255, 152, 0, 0.04)',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 3,
+                  },
+                }}
+              >
+                <CardActionArea
+                  onClick={() => handleSelectMode('worker')}
+                  sx={{ p: 2.5 }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        borderRadius: 2,
+                        bgcolor: 'warning.main',
+                        color: '#fff',
+                        display: 'flex',
+                      }}
+                    >
+                      <PosIcon sx={{ fontSize: 32 }} />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="h6" fontWeight={700} color="warning.dark">
+                          Worker / POS Counter Mode
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" mt={0.5}>
+                        Billing counter view for staff & cashiers. Fast-lane POS billing & bill history only. All administrative & inventory editing features are securely locked.
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          </Grid>
         </DialogContent>
       </Dialog>
     </Box>

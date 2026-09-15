@@ -63,14 +63,15 @@ export const INDIAN_STATES = [
 ];
 
 export const SIDEBAR_MENU = [
-  { title: 'Dashboard', path: '/', icon: 'Dashboard' },
-  { title: 'Inventory', path: '/inventory', icon: 'Inventory2' },
-  { title: 'Billing', path: '/billing', icon: 'PointOfSale' },
-  { title: 'Bill History', path: '/bills', icon: 'Receipt' },
-  { title: 'Sticker Print', path: '/stickers', icon: 'QrCode2' },
-  { title: 'Suppliers', path: '/suppliers', icon: 'LocalShipping' },
+  { title: 'Dashboard', path: '/', icon: 'Dashboard', ownerOnly: true },
+  { title: 'Billing (POS)', path: '/billing', icon: 'PointOfSale', workerAllowed: true },
+  { title: 'Bill History', path: '/bills', icon: 'Receipt', workerAllowed: true },
+  { title: 'Inventory', path: '/inventory', icon: 'Inventory2', ownerOnly: true },
+  { title: 'Purchase Orders', path: '/purchase-orders', icon: 'ShoppingCart', ownerOnly: true },
+  { title: 'Suppliers', path: '/suppliers', icon: 'LocalShipping', ownerOnly: true },
+  { title: 'Sticker Print', path: '/stickers', icon: 'QrCode2', ownerOnly: true },
   { title: 'Coupons', path: '/coupons', icon: 'LocalOffer', ownerOnly: true },
   { title: 'Sales Dashboard', path: '/sales', icon: 'TrendingUp', ownerOnly: true },
-  { title: 'Reports', path: '/reports', icon: 'Assessment' },
-  { title: 'Settings', path: '/settings', icon: 'Settings' },
+  { title: 'Reports', path: '/reports', icon: 'Assessment', ownerOnly: true },
+  { title: 'Settings', path: '/settings', icon: 'Settings', ownerOnly: true },
 ];

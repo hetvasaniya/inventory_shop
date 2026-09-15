@@ -59,6 +59,11 @@ const productSchema = new mongoose.Schema(
       default: 10,
       min: [0, 'Minimum stock level cannot be negative'],
     },
+    targetStockLevel: {
+      type: Number,
+      default: 50,
+      min: [0, 'Target stock level cannot be negative'],
+    },
     gstRate: {
       type: Number,
       default: 18,
