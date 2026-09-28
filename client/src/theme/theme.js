@@ -49,7 +49,7 @@ const getDesignTokens = (mode) => ({
     },
     background: {
       default:
-        mode === 'dark' ? '#0A1929' : mode === 'medium' ? '#DCDDDF' : '#d8eacc40',
+        mode === 'dark' ? '#0A1929' : mode === 'medium' ? '#DCDDDF' : '#d3e5c5af',
       paper:
         mode === 'dark' ? '#112233' : mode === 'medium' ? '#EAEBED' : '#FFFCF5',
     },
@@ -70,7 +70,7 @@ const getDesignTokens = (mode) => ({
         ? 'rgba(255, 255, 255, 0.12)'
         : mode === 'medium'
         ? 'rgba(43, 46, 51, 0.14)'
-        : 'rgba(90, 60, 10, 0.12)',
+        : 'rgba(26, 18, 8, 0.18)',
     action: {
       hover:
         mode === 'dark'
@@ -136,11 +136,17 @@ const getComponents = (theme, rawMode) => {
   const isDark = rawMode === 'dark';
   const isMedium = rawMode === 'medium';
 
+  const cardBorder = isDark
+    ? '1px solid rgba(255, 255, 255, 0.08)'
+    : isMedium
+    ? '1px solid rgba(43, 46, 51, 0.14)'
+    : '1px solid rgba(26, 18, 8, 0.16)';
+
   const cardShadow = isDark
     ? '0 4px 20px rgba(0,0,0,0.4)'
     : isMedium
     ? '0 3px 14px rgba(0,0,0,0.10)'
-    : '0 2px 12px rgba(0,0,0,0.06)';
+    : '0 2px 8px rgba(0,0,0,0.06)';
 
   const elevatedShadow = isDark
     ? '0 8px 28px rgba(0,0,0,0.5)'
@@ -152,7 +158,7 @@ const getComponents = (theme, rawMode) => {
     ? 'rgba(255,255,255,0.04)'
     : isMedium
     ? 'rgba(43,46,51,0.06)'
-    : '#ac7a0c58';
+    : '#f4ede2';
 
   return {
     MuiCssBaseline: {
@@ -212,6 +218,11 @@ const getComponents = (theme, rawMode) => {
         },
         outlined: {
           borderWidth: 1.5,
+          borderColor: isDark
+            ? 'rgba(255, 255, 255, 0.24)'
+            : isMedium
+            ? 'rgba(43, 46, 51, 0.28)'
+            : 'rgba(26, 18, 8, 0.28)',
           '&:hover': { borderWidth: 1.5 },
         },
       },
@@ -230,7 +241,11 @@ const getComponents = (theme, rawMode) => {
 
     MuiPaper: {
       styleOverrides: {
-        root: { backgroundImage: 'none', borderRadius: 12 },
+        root: {
+          backgroundImage: 'none',
+          borderRadius: 12,
+          border: cardBorder,
+        },
         elevation1: { boxShadow: cardShadow },
         elevation3: { boxShadow: elevatedShadow },
       },
@@ -242,7 +257,8 @@ const getComponents = (theme, rawMode) => {
           borderRadius: 14,
           backgroundImage: 'none',
           boxShadow: cardShadow,
-          transition: 'box-shadow .25s ease, transform .25s ease',
+          border: cardBorder,
+          transition: 'box-shadow .25s ease, transform .25s ease, border-color .25s ease',
         },
       },
     },
@@ -261,7 +277,14 @@ const getComponents = (theme, rawMode) => {
           borderRadius: 8,
           '& .MuiChip-icon': { marginLeft: 6, marginRight: -2 },
         },
-        outlined: { borderWidth: 1.5 },
+        outlined: {
+          borderWidth: 1.5,
+          borderColor: isDark
+            ? 'rgba(255, 255, 255, 0.2)'
+            : isMedium
+            ? 'rgba(43, 46, 51, 0.25)'
+            : 'rgba(26, 18, 8, 0.24)',
+        },
       },
     },
 
@@ -285,7 +308,13 @@ const getComponents = (theme, rawMode) => {
             borderColor: theme.palette.error.main,
           },
         },
-        notchedOutline: { borderColor: theme.palette.divider },
+        notchedOutline: {
+          borderColor: isDark
+            ? 'rgba(255, 255, 255, 0.16)'
+            : isMedium
+            ? 'rgba(43, 46, 51, 0.22)'
+            : 'rgba(26, 18, 8, 0.24)',
+        },
       },
     },
 
@@ -355,6 +384,7 @@ const getComponents = (theme, rawMode) => {
           borderRadius: 16,
           boxShadow: elevatedShadow,
           backgroundImage: 'none',
+          border: cardBorder,
         },
       },
     },
@@ -370,7 +400,7 @@ const getComponents = (theme, rawMode) => {
         paper: {
           borderRadius: 10,
           boxShadow: elevatedShadow,
-          border: `1px solid ${theme.palette.divider}`,
+          border: cardBorder,
         },
       },
     },
@@ -438,7 +468,13 @@ const getComponents = (theme, rawMode) => {
 
     MuiAlert: {
       styleOverrides: {
-        root: { borderRadius: 10, fontWeight: 500 },
+        root: {
+          borderRadius: 10,
+          fontWeight: 500,
+          border: isDark
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(26, 18, 8, 0.15)',
+        },
         standardSuccess: { backgroundColor: alpha(theme.palette.success.main, 0.12) },
         standardWarning: { backgroundColor: alpha(theme.palette.warning.main, 0.12) },
         standardError: { backgroundColor: alpha(theme.palette.error.main, 0.12) },
@@ -475,7 +511,7 @@ const getComponents = (theme, rawMode) => {
         root: {
           borderRadius: 10,
           boxShadow: 'none',
-          border: `1px solid ${theme.palette.divider}`,
+          border: cardBorder,
           '&:before': { display: 'none' },
           '&.Mui-expanded': { margin: 0 },
         },
@@ -509,6 +545,13 @@ const getComponents = (theme, rawMode) => {
         head: {
           fontWeight: 700,
           backgroundColor: tableHeadBg,
+          borderBottom: `2px solid ${
+            isDark
+              ? 'rgba(255, 255, 255, 0.14)'
+              : isMedium
+              ? 'rgba(43, 46, 51, 0.18)'
+              : 'rgba(26, 18, 8, 0.20)'
+          }`,
         },
       },
     },

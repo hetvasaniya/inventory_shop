@@ -79,9 +79,9 @@ export default function DashboardPage() {
       {/* Welcome Banner */}
       <Box
         sx={{
-          mb: 4,
-          p: 3,
-          borderRadius: 3,
+          mb: 2,
+          p: 2,
+          borderRadius: 2.5,
           background: `linear-gradient(135deg, ${alpha(
             theme.palette.primary.main,
             0.12
@@ -92,19 +92,19 @@ export default function DashboardPage() {
           gap: 2,
         }}
       >
-        <WavingHand sx={{ fontSize: 36, color: '#F59E0B' }} />
+        <WavingHand sx={{ fontSize: 32, color: '#F59E0B' }} />
         <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
+          <Typography variant="h6" fontWeight={800} color="text.primary">
             {greeting}, {user?.name?.split(' ')[0] || 'there'}! 👋
           </Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.3}>
+          <Typography variant="body2" color="text.secondary" mt={0.2}>
             Here's a live snapshot of your store today. Let's have a great day!
           </Typography>
         </Box>
       </Box>
 
       {/* Main Stats Row */}
-      <Grid container spacing={3} mb={4}>
+      <Grid container spacing={2} mb={2}>
         <Grid item xs={12} sm={6} md={3}>
           <Card
             sx={{
@@ -116,6 +116,8 @@ export default function DashboardPage() {
           >
             <CardContent
               sx={{
+                p: 2,
+                '&:last-child': { pb: 2 },
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -125,7 +127,7 @@ export default function DashboardPage() {
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>
                   Today's Sales
                 </Typography>
-                <Typography variant="h4" fontWeight={800} mt={1}>
+                <Typography variant="h5" fontWeight={800} mt={0.5}>
                   ₹{stats?.today?.revenue?.toFixed(2) || '0.00'}
                 </Typography>
               </Box>
@@ -147,6 +149,8 @@ export default function DashboardPage() {
           >
             <CardContent
               sx={{
+                p: 2,
+                '&:last-child': { pb: 2 },
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -156,7 +160,7 @@ export default function DashboardPage() {
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>
                   Low Stock Items
                 </Typography>
-                <Typography variant="h4" fontWeight={800} mt={1} color="warning.main">
+                <Typography variant="h5" fontWeight={800} mt={0.5} color="warning.main">
                   {stats?.inventory?.lowStockCount || 0}
                 </Typography>
               </Box>
@@ -178,6 +182,8 @@ export default function DashboardPage() {
           >
             <CardContent
               sx={{
+                p: 2,
+                '&:last-child': { pb: 2 },
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -187,7 +193,7 @@ export default function DashboardPage() {
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>
                   Pending Purchase Orders
                 </Typography>
-                <Typography variant="h4" fontWeight={800} mt={1} color="secondary.main">
+                <Typography variant="h5" fontWeight={800} mt={0.5} color="secondary.main">
                   {pendingPOs.length}
                 </Typography>
               </Box>
@@ -209,6 +215,8 @@ export default function DashboardPage() {
           >
             <CardContent
               sx={{
+                p: 2,
+                '&:last-child': { pb: 2 },
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -218,7 +226,7 @@ export default function DashboardPage() {
                 <Typography color="text.secondary" variant="body2" fontWeight={600}>
                   Total Catalog Products
                 </Typography>
-                <Typography variant="h4" fontWeight={800} mt={1}>
+                <Typography variant="h5" fontWeight={800} mt={0.5}>
                   {stats?.inventory?.totalProducts || 0}
                 </Typography>
               </Box>
@@ -231,11 +239,11 @@ export default function DashboardPage() {
       </Grid>
 
       {/* Visual Analytics & Action Center */}
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {/* Sales Chart */}
         <Grid item xs={12} lg={8}>
-          <Paper sx={{ p: 3, height: 380, mb: 3 }}>
-            <Typography variant="h6" fontWeight={700} mb={3}>
+          <Paper sx={{ p: 2, height: 350, mb: 2 }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
               Revenue Overview
             </Typography>
             <ResponsiveContainer width="100%" height="80%">
@@ -270,8 +278,8 @@ export default function DashboardPage() {
           </Paper>
 
           {/* Pending Restock & Purchase Orders section */}
-          <Paper sx={{ p: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Paper sx={{ p: 2 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
               <Typography variant="h6" fontWeight={700}>
                 Pending Purchase Orders
               </Typography>
@@ -317,8 +325,8 @@ export default function DashboardPage() {
 
         {/* Quick Actions & Stock Warnings */}
         <Grid item xs={12} lg={4}>
-          <Paper sx={{ p: 3, mb: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Typography variant="h6" fontWeight={700} mb={1}>
+          <Paper sx={{ p: 2, mb: 2, display: 'flex', flexDirection: 'column', gap: 1.2 }}>
+            <Typography variant="h6" fontWeight={700} mb={0.5}>
               Quick Operations
             </Typography>
             <Button
@@ -361,7 +369,7 @@ export default function DashboardPage() {
             </Button>
           </Paper>
 
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: 2 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
               <Typography variant="h6" fontWeight={700} color="warning.main">
                 Low Stock Warnings

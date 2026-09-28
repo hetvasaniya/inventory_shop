@@ -261,7 +261,7 @@ const generatePurchaseOrderPDF = async (po, shop) => {
         cellX += colWidths.unit;
 
         const price = item.purchasePrice || 0;
-        doc.text(`₹${price.toFixed(2)}`, cellX, rowY + 3, {
+        doc.text(`Rs. ${price.toFixed(2)}`, cellX, rowY + 3, {
           width: colWidths.price,
           align: 'right',
         });
@@ -274,7 +274,7 @@ const generatePurchaseOrderPDF = async (po, shop) => {
         cellX += colWidths.gst;
 
         const lineTotal = item.totalAmount || price * orderQty;
-        doc.font('Helvetica-Bold').fillColor('#1E293B').text(`₹${lineTotal.toFixed(2)}`, cellX, rowY + 3, {
+        doc.font('Helvetica-Bold').fillColor('#1E293B').text(`Rs. ${lineTotal.toFixed(2)}`, cellX, rowY + 3, {
           width: colWidths.total,
           align: 'right',
         });
@@ -325,16 +325,16 @@ const generatePurchaseOrderPDF = async (po, shop) => {
       totY += 13;
 
       doc.font('Helvetica').fillColor('#475569').text('Subtotal (Pre-tax):', totalsLeft, totY);
-      doc.font('Helvetica').fillColor('#1E293B').text(`₹${(po.subtotal || 0).toFixed(2)}`, totalsLeft + 110, totY, { width: 110, align: 'right' });
+      doc.font('Helvetica').fillColor('#1E293B').text(`Rs. ${(po.subtotal || 0).toFixed(2)}`, totalsLeft + 110, totY, { width: 110, align: 'right' });
       totY += 13;
 
       doc.font('Helvetica').fillColor('#475569').text('GST / Tax:', totalsLeft, totY);
-      doc.font('Helvetica').fillColor('#1E293B').text(`₹${(po.gstTotal || 0).toFixed(2)}`, totalsLeft + 110, totY, { width: 110, align: 'right' });
+      doc.font('Helvetica').fillColor('#1E293B').text(`Rs. ${(po.gstTotal || 0).toFixed(2)}`, totalsLeft + 110, totY, { width: 110, align: 'right' });
       totY += 13;
 
       if ((po.deliveryCharges || 0) > 0) {
         doc.font('Helvetica').fillColor('#475569').text('Delivery Charges:', totalsLeft, totY);
-        doc.font('Helvetica').fillColor('#1E293B').text(`₹${po.deliveryCharges.toFixed(2)}`, totalsLeft + 110, totY, { width: 110, align: 'right' });
+        doc.font('Helvetica').fillColor('#1E293B').text(`Rs. ${po.deliveryCharges.toFixed(2)}`, totalsLeft + 110, totY, { width: 110, align: 'right' });
         totY += 13;
       }
 
@@ -342,7 +342,7 @@ const generatePurchaseOrderPDF = async (po, shop) => {
       totY += 6;
 
       doc.font('Helvetica-Bold').fontSize(11).fillColor('#0284C7').text('Grand Total:', totalsLeft, totY);
-      doc.font('Helvetica-Bold').fontSize(11).fillColor('#0284C7').text(`₹${(po.grandTotal || 0).toFixed(2)}`, totalsLeft + 100, totY, { width: 120, align: 'right' });
+      doc.font('Helvetica-Bold').fontSize(11).fillColor('#0284C7').text(`Rs. ${(po.grandTotal || 0).toFixed(2)}`, totalsLeft + 100, totY, { width: 120, align: 'right' });
 
       // ── Footer / Authorization ─────────────────────────────────
       const footerY = 760;

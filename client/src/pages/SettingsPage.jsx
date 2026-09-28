@@ -96,16 +96,16 @@ export default function SettingsPage() {
     : 'U';
 
   const cardStyle = {
-    p: 3,
-    borderRadius: 3,
+    p: 2,
+    borderRadius: 2.5,
     border: `1px solid ${theme.palette.divider}`,
     boxShadow: 'none',
   };
 
   return (
     <Box>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={800} gutterBottom>Settings</Typography>
+      <Box mb={2}>
+        <Typography variant="h5" fontWeight={800} gutterBottom>Settings</Typography>
         <Typography variant="body2" color="text.secondary">
           Manage your personal profile and store information.
         </Typography>
@@ -115,7 +115,7 @@ export default function SettingsPage() {
         value={tab}
         onChange={(_, v) => setTab(v)}
         sx={{
-          mb: 3,
+          mb: 2,
           '& .MuiTabs-indicator': { height: 3, borderRadius: 2 },
           '& .MuiTab-root': { fontWeight: 600, textTransform: 'none', fontSize: '0.95rem' },
         }}
@@ -125,7 +125,7 @@ export default function SettingsPage() {
       </Tabs>
 
       {tab === 0 && (
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {/* Avatar Card */}
           <Grid item xs={12} md={4}>
             <Paper sx={{ ...cardStyle, textAlign: 'center' }}>

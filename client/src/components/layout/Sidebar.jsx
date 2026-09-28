@@ -30,6 +30,8 @@ import {
   StorefrontRounded,
   ShoppingCart,
   BadgeOutlined,
+  Psychology,
+  SmartToy,
 } from '@mui/icons-material';
 import { DRAWER_WIDTH, DRAWER_WIDTH_COLLAPSED, SIDEBAR_MENU } from '../../utils/constants';
 import useAuth from '../../hooks/useAuth';
@@ -45,6 +47,8 @@ const iconMap = {
   LocalOffer: <LocalOffer />,
   TrendingUp: <TrendingUp />,
   Assessment: <Assessment />,
+  Psychology: <Psychology sx={{ color: '#8B5CF6' }} />,
+  SmartToy: <SmartToy sx={{ color: '#8B5CF6' }} />,
   Settings: <Settings />,
 };
 
@@ -128,12 +132,14 @@ const Sidebar = ({ open, mobileOpen, onToggle, onMobileClose }) => {
         )}
       </Box>
 
-      <Divider sx={{ opacity: 0.15 }} />
+      <Divider />
 
       {/* Navigation */}
       <List sx={{ flex: 1, px: 1, py: 1.5 }}>
         {filteredMenu.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = item.isAiSection
+            ? location.pathname.startsWith('/ai')
+            : location.pathname === item.path;
           const button = (
             <ListItem key={item.title} disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton

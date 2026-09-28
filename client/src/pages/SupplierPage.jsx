@@ -169,13 +169,13 @@ export default function SupplierPage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 3,
+          mb: 2,
           flexWrap: 'wrap',
-          gap: 2,
+          gap: 1.5,
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight={800} color="text.primary">
+          <Typography variant="h5" fontWeight={800} color="text.primary">
             Supplier Directory
           </Typography>
           <Typography variant="body2" color="text.secondary">

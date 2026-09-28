@@ -47,7 +47,7 @@ export const useBillPdf = () => {
   return useMutation({
     mutationFn: async (id) => {
       const res = await api.get(`/bills/${id}/pdf`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `bill-${id}.pdf`);
@@ -61,3 +61,24 @@ export const useBillPdf = () => {
     },
   });
 };
+
+export const useDeleteDemoBills = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.delete('/bills/demo');
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['bills'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['ai'] });
+      toast.success(data?.message || 'Demo bills removed successfully!');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to remove demo bills');
+    },
+  });
+};
+
+

@@ -1,20 +1,38 @@
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
-const { calculateGST } = require('./gstCalculator');
 
 /**
- * Generate a tax-compliant bill/invoice PDF.
+ * Generate a shopping mart / POS thermal receipt (80mm small size) invoice PDF.
  *
  * @param {object} bill - The bill document (populated)
  * @param {object} shop - The shop document
  * @returns {Promise<Buffer>} PDF buffer
  */
-const generateBillPDF = async (bill, shop) => {
+const generateBillPDF = async (bill, shop = {}) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // 80mm thermal receipt width in points: ~226.77 pt (3.15 inches)
+      const pageWidth = 226.77;
+      const leftMargin = 10;
+      const rightMargin = 10;
+      const contentWidth = pageWidth - leftMargin - rightMargin; // 206.77 pt
+      const rightEdge = leftMargin + contentWidth;
+
+      // Estimate total height dynamically so the receipt is a continuous thermal slip
+      const itemsCount = bill.items?.length || 1;
+      const estimatedHeight = Math.max(
+        380,
+        340 +
+          itemsCount * 28 +
+          (bill.discount > 0 ? 14 : 0) +
+          (bill.paymentDetails ? 24 : 0) +
+          (bill.customer && bill.customer.name !== 'Walk-in Customer' ? 24 : 0)
+      );
+
       const doc = new PDFDocument({
-        size: 'A4',
-        margins: { top: 40, bottom: 40, left: 40, right: 40 },
+        size: [pageWidth, Math.ceil(estimatedHeight)],
+        margins: { top: 12, bottom: 14, left: leftMargin, right: rightMargin },
+        autoFirstPage: true,
       });
 
       const buffers = [];
@@ -22,185 +40,227 @@ const generateBillPDF = async (bill, shop) => {
       doc.on('end', () => resolve(Buffer.concat(buffers)));
       doc.on('error', reject);
 
-      const pageWidth = 515; // Usable width (A4 - margins)
+      const drawDashedLine = (y) => {
+        doc
+          .save()
+          .strokeColor('#666666')
+          .lineWidth(0.6)
+          .dash(2.5, { space: 2 })
+          .moveTo(leftMargin, y)
+          .lineTo(rightEdge, y)
+          .stroke()
+          .undash()
+          .restore();
+      };
 
-      // ── Header ───────────────────────────────────────────
+      const drawSolidLine = (y, width = 0.8) => {
+        doc
+          .save()
+          .strokeColor('#222222')
+          .lineWidth(width)
+          .moveTo(leftMargin, y)
+          .lineTo(rightEdge, y)
+          .stroke()
+          .restore();
+      };
+
+      let curY = 12;
+
+      // ── 1. Shop Header ──────────────────────────────────────────
       doc
         .font('Helvetica-Bold')
-        .fontSize(20)
-        .text(shop.shopName || 'BizGrow Store', { align: 'center' });
+        .fontSize(12)
+        .fillColor('#000000')
+        .text(shop.shopName || 'BizGrow Supermarket', leftMargin, curY, {
+          width: contentWidth,
+          align: 'center',
+        });
+      curY = doc.y + 2;
 
-      doc.fontSize(9).font('Helvetica');
+      doc.font('Helvetica').fontSize(7).fillColor('#333333');
       if (shop.address) {
         const addr = [shop.address.street, shop.address.city, shop.address.state, shop.address.pincode]
           .filter(Boolean)
           .join(', ');
-        if (addr) doc.text(addr, { align: 'center' });
+        if (addr) {
+          doc.text(addr, leftMargin, curY, { width: contentWidth, align: 'center' });
+          curY = doc.y + 1;
+        }
       }
-      if (shop.phone) doc.text(`Phone: ${shop.phone}`, { align: 'center' });
-      if (shop.gstin) doc.text(`GSTIN: ${shop.gstin}`, { align: 'center' });
 
-      doc.moveDown(0.5);
-      doc.moveTo(40, doc.y).lineTo(555, doc.y).stroke();
-      doc.moveDown(0.3);
+      if (shop.phone) {
+        doc.text(`Phone: ${shop.phone}`, leftMargin, curY, { width: contentWidth, align: 'center' });
+        curY = doc.y + 1;
+      }
+      if (shop.gstin) {
+        doc.text(`GSTIN: ${shop.gstin}`, leftMargin, curY, { width: contentWidth, align: 'center' });
+        curY = doc.y + 1;
+      }
 
-      // ── TAX INVOICE title ─────────────────────────────────
-      doc.font('Helvetica-Bold').fontSize(14).text('TAX INVOICE', { align: 'center' });
-      doc.moveDown(0.3);
+      curY += 3;
+      drawDashedLine(curY);
+      curY += 5;
 
-      // ── Bill details ──────────────────────────────────────
-      doc.font('Helvetica').fontSize(9);
-      const billDate = new Date(bill.createdAt).toLocaleString('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
+      // ── 2. Invoice Meta ─────────────────────────────────────────
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(8.5)
+        .fillColor('#000000')
+        .text('TAX INVOICE / RETAIL BILL', leftMargin, curY, {
+          width: contentWidth,
+          align: 'center',
+        });
+      curY = doc.y + 4;
+
+      const billDate = new Date(bill.createdAt || Date.now()).toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
       });
 
-      doc.text(`Bill No: ${bill.billNumber}`, 40, doc.y);
-      doc.text(`Date: ${billDate}`, 40, doc.y);
-      doc.text(`Payment: ${bill.paymentMethod.toUpperCase()}`, 40, doc.y);
+      doc.font('Helvetica-Bold').fontSize(7.5).fillColor('#000000');
+      doc.text(`Bill No: ${bill.billNumber}`, leftMargin, curY, { width: 110 });
+      doc.font('Helvetica').fontSize(7).fillColor('#333333');
+      doc.text(billDate, leftMargin + 100, curY, { width: contentWidth - 100, align: 'right' });
+      curY += 10;
 
-      if (bill.customer && bill.customer.name !== 'Walk-in Customer') {
-        doc.moveDown(0.3);
-        doc.font('Helvetica-Bold').text('Customer:', 40, doc.y);
-        doc.font('Helvetica');
-        doc.text(`Name: ${bill.customer.name}`);
-        if (bill.customer.phone) doc.text(`Phone: ${bill.customer.phone}`);
+      const paymentMethod = (bill.paymentMethod || 'CASH').toUpperCase();
+      doc.text(`Payment: ${paymentMethod}`, leftMargin, curY, { width: 110 });
+      curY += 10;
+
+      if (bill.customer && bill.customer.name && bill.customer.name !== 'Walk-in Customer') {
+        doc.font('Helvetica').fontSize(7).fillColor('#333333');
+        const custInfo = `Customer: ${bill.customer.name}${bill.customer.phone ? ` (${bill.customer.phone})` : ''}`;
+        doc.text(custInfo, leftMargin, curY, { width: contentWidth });
+        curY = doc.y + 2;
       }
 
-      doc.moveDown(0.5);
+      curY += 2;
+      drawDashedLine(curY);
+      curY += 5;
 
-      // ── Items table header ────────────────────────────────
-      const tableTop = doc.y;
-      const colWidths = {
-        sno: 30,
-        item: 160,
-        hsn: 55,
-        qty: 35,
-        rate: 60,
-        gst: 45,
-        amount: 70,
-      };
+      // ── 3. Table Header ─────────────────────────────────────────
+      doc.font('Helvetica-Bold').fontSize(7.5).fillColor('#000000');
+      doc.text('Item Description', leftMargin, curY, { width: 110 });
+      doc.text('Qty', leftMargin + 105, curY, { width: 25, align: 'center' });
+      doc.text('Rate', leftMargin + 130, curY, { width: 35, align: 'right' });
+      doc.text('Amount', leftMargin + 165, curY, { width: 41, align: 'right' });
+      curY = doc.y + 2;
 
-      // Header background
-      doc.rect(40, tableTop, pageWidth, 18).fill('#333333');
-      doc.fill('#ffffff').font('Helvetica-Bold').fontSize(8);
+      drawDashedLine(curY);
+      curY += 4;
 
-      let colX = 45;
-      doc.text('#', colX, tableTop + 5, { width: colWidths.sno });
-      colX += colWidths.sno;
-      doc.text('Item', colX, tableTop + 5, { width: colWidths.item });
-      colX += colWidths.item;
-      doc.text('HSN', colX, tableTop + 5, { width: colWidths.hsn });
-      colX += colWidths.hsn;
-      doc.text('Qty', colX, tableTop + 5, { width: colWidths.qty, align: 'right' });
-      colX += colWidths.qty;
-      doc.text('Rate', colX, tableTop + 5, { width: colWidths.rate, align: 'right' });
-      colX += colWidths.rate;
-      doc.text('GST%', colX, tableTop + 5, { width: colWidths.gst, align: 'right' });
-      colX += colWidths.gst;
-      doc.text('Amount', colX, tableTop + 5, { width: colWidths.amount, align: 'right' });
-
-      doc.fill('#000000');
-
-      // ── Items rows ────────────────────────────────────────
-      let rowY = tableTop + 22;
-      doc.font('Helvetica').fontSize(8);
+      // ── 4. Item Rows ────────────────────────────────────────────
+      let totalItemsQty = 0;
 
       bill.items.forEach((item, index) => {
-        // Add new page if needed
-        if (rowY > 700) {
-          doc.addPage();
-          rowY = 50;
-        }
+        const qty = item.quantity || 1;
+        totalItemsQty += qty;
 
-        // Alternate row background
-        if (index % 2 === 0) {
-          doc.rect(40, rowY - 2, pageWidth, 16).fill('#f9f9f9');
-          doc.fill('#000000');
-        }
+        // Line 1: Item Index & Name
+        doc.font('Helvetica-Bold').fontSize(7.5).fillColor('#111111');
+        const itemName = `${index + 1}. ${item.name || 'Item'}`;
+        doc.text(itemName, leftMargin, curY, { width: contentWidth });
+        curY = doc.y + 1;
 
-        colX = 45;
-        doc.text(String(index + 1), colX, rowY, { width: colWidths.sno });
-        colX += colWidths.sno;
+        // Line 2: Qty x Rate (GST %) and Item Total Amount
+        doc.font('Helvetica').fontSize(7).fillColor('#444444');
+        const rateText = `   ${qty} x Rs. ${Number(item.priceAtSale || 0).toFixed(2)}${item.gstRate ? ` (GST ${item.gstRate}%)` : ''}`;
+        doc.text(rateText, leftMargin, curY, { width: 135 });
 
-        const itemName = item.name.length > 30 ? item.name.substring(0, 30) + '...' : item.name;
-        doc.text(itemName, colX, rowY, { width: colWidths.item });
-        colX += colWidths.item;
-        doc.text(item.hsnCode || '-', colX, rowY, { width: colWidths.hsn });
-        colX += colWidths.hsn;
-        doc.text(String(item.quantity), colX, rowY, { width: colWidths.qty, align: 'right' });
-        colX += colWidths.qty;
-        doc.text(`₹${item.priceAtSale.toFixed(2)}`, colX, rowY, {
-          width: colWidths.rate,
-          align: 'right',
-        });
-        colX += colWidths.rate;
-        doc.text(`${item.gstRate}%`, colX, rowY, { width: colWidths.gst, align: 'right' });
-        colX += colWidths.gst;
-        doc.text(`₹${item.itemTotal.toFixed(2)}`, colX, rowY, {
-          width: colWidths.amount,
-          align: 'right',
-        });
-
-        rowY += 16;
+        doc.font('Helvetica-Bold').fontSize(7.5).fillColor('#000000');
+        const amountText = `Rs. ${Number(item.itemTotal || 0).toFixed(2)}`;
+        doc.text(amountText, leftMargin + 135, curY, { width: 71, align: 'right' });
+        curY = doc.y + 3;
       });
 
-      // ── Table bottom line ─────────────────────────────────
-      doc.moveTo(40, rowY + 2).lineTo(555, rowY + 2).stroke();
+      drawDashedLine(curY);
+      curY += 4;
 
-      // ── Totals ────────────────────────────────────────────
-      rowY += 10;
-      const totalsX = 380;
-      const totalsValX = 470;
+      // ── 5. Totals & Tax Summary ─────────────────────────────────
+      doc.font('Helvetica').fontSize(7.5).fillColor('#333333');
 
-      doc.font('Helvetica').fontSize(9);
-      doc.text('Subtotal:', totalsX, rowY);
-      doc.text(`₹${bill.subtotal.toFixed(2)}`, totalsValX, rowY, { width: 85, align: 'right' });
-      rowY += 14;
+      // Total Items / Qty count
+      doc.text(`Total Items: ${bill.items.length} (Qty: ${totalItemsQty})`, leftMargin, curY, { width: 110 });
+      curY += 10;
 
-      doc.text('CGST:', totalsX, rowY);
-      doc.text(`₹${bill.totalCgst.toFixed(2)}`, totalsValX, rowY, { width: 85, align: 'right' });
-      rowY += 14;
-
-      doc.text('SGST:', totalsX, rowY);
-      doc.text(`₹${bill.totalSgst.toFixed(2)}`, totalsValX, rowY, { width: 85, align: 'right' });
-      rowY += 14;
-
-      if (bill.discount > 0) {
-        doc.text('Discount:', totalsX, rowY);
-        doc.text(`-₹${bill.discount.toFixed(2)}`, totalsValX, rowY, {
-          width: 85,
-          align: 'right',
-        });
-        rowY += 14;
-
-        if (bill.couponCode) {
-          doc.fontSize(8).text(`(Coupon: ${bill.couponCode})`, totalsX, rowY);
-          rowY += 14;
-        }
-      }
-
-      doc.moveTo(totalsX, rowY).lineTo(555, rowY).stroke();
-      rowY += 5;
-
-      doc.font('Helvetica-Bold').fontSize(12);
-      doc.text('Grand Total:', totalsX, rowY);
-      doc.text(`₹${bill.grandTotal.toFixed(2)}`, totalsValX, rowY, {
-        width: 85,
+      // Subtotal
+      doc.text('Subtotal (Taxable):', leftMargin + 30, curY, { width: 90 });
+      doc.text(`Rs. ${Number(bill.subtotal || 0).toFixed(2)}`, leftMargin + 120, curY, {
+        width: 86,
         align: 'right',
       });
-      rowY += 20;
+      curY += 10;
 
-      // Payment details
-      if (bill.paymentDetails) {
-        doc.font('Helvetica').fontSize(9);
-        doc.text(`Amount Paid: ₹${(bill.paymentDetails.amountPaid || 0).toFixed(2)}`, totalsX, rowY);
-        rowY += 14;
-        doc.text(`Change: ₹${(bill.paymentDetails.change || 0).toFixed(2)}`, totalsX, rowY);
-        rowY += 20;
+      // CGST
+      if (bill.totalCgst > 0) {
+        doc.text('CGST:', leftMargin + 30, curY, { width: 90 });
+        doc.text(`Rs. ${Number(bill.totalCgst || 0).toFixed(2)}`, leftMargin + 120, curY, {
+          width: 86,
+          align: 'right',
+        });
+        curY += 10;
       }
 
-      // ── QR Code ───────────────────────────────────────────
+      // SGST
+      if (bill.totalSgst > 0) {
+        doc.text('SGST:', leftMargin + 30, curY, { width: 90 });
+        doc.text(`Rs. ${Number(bill.totalSgst || 0).toFixed(2)}`, leftMargin + 120, curY, {
+          width: 86,
+          align: 'right',
+        });
+        curY += 10;
+      }
+
+      // Discount
+      if (bill.discount > 0) {
+        doc.text('Discount:', leftMargin + 30, curY, { width: 90 });
+        doc.text(`-Rs. ${Number(bill.discount || 0).toFixed(2)}`, leftMargin + 120, curY, {
+          width: 86,
+          align: 'right',
+        });
+        curY += 10;
+
+        if (bill.couponCode) {
+          doc.fontSize(6.5).text(`(Coupon: ${bill.couponCode})`, leftMargin + 30, curY, { width: 150 });
+          curY += 9;
+        }
+      }
+
+      curY += 2;
+      drawSolidLine(curY, 1);
+      curY += 4;
+
+      // Grand Total
+      doc.font('Helvetica-Bold').fontSize(9.5).fillColor('#000000');
+      doc.text('GRAND TOTAL:', leftMargin, curY, { width: 100 });
+      doc.text(`Rs. ${Number(bill.grandTotal || 0).toFixed(2)}`, leftMargin + 100, curY, {
+        width: 106,
+        align: 'right',
+      });
+      curY = doc.y + 3;
+
+      drawSolidLine(curY, 1);
+      curY += 4;
+
+      // Cash Tendered & Change
+      if (bill.paymentDetails && bill.paymentDetails.amountPaid != null) {
+        doc.font('Helvetica').fontSize(7).fillColor('#333333');
+        const paid = Number(bill.paymentDetails.amountPaid || 0);
+        const change = Number(bill.paymentDetails.change || 0);
+
+        doc.text(`Amount Paid: Rs. ${paid.toFixed(2)}`, leftMargin, curY, { width: 100 });
+        doc.text(`Change: Rs. ${change.toFixed(2)}`, leftMargin + 100, curY, { width: 106, align: 'right' });
+        curY = doc.y + 3;
+
+        drawDashedLine(curY);
+        curY += 4;
+      }
+
+      // ── 6. QR Code ──────────────────────────────────────────────
       try {
         const qrData = JSON.stringify({
           bill: bill.billNumber,
@@ -211,35 +271,46 @@ const generateBillPDF = async (bill, shop) => {
         });
 
         const qrBuffer = await QRCode.toBuffer(qrData, {
-          width: 80,
-          margin: 1,
+          width: 60,
+          margin: 0,
         });
 
-        if (rowY > 720) {
-          doc.addPage();
-          rowY = 50;
-        }
+        const qrX = leftMargin + (contentWidth - 60) / 2;
+        doc.image(qrBuffer, qrX, curY, { width: 60, height: 60 });
+        curY += 62;
 
-        doc.image(qrBuffer, 40, rowY, { width: 80, height: 80 });
-        doc.font('Helvetica').fontSize(7).text('Scan for bill details', 40, rowY + 82, {
-          width: 80,
+        doc.font('Helvetica').fontSize(6.5).fillColor('#666666').text('Scan to verify bill', leftMargin, curY, {
+          width: contentWidth,
           align: 'center',
         });
+        curY = doc.y + 4;
       } catch (qrErr) {
-        // QR generation is non-critical, skip if it fails
+        // Non-critical, skip if QR generation fails
       }
 
-      // ── Footer ────────────────────────────────────────────
-      const footerY = Math.max(rowY + 100, 750);
-      doc.font('Helvetica').fontSize(8);
-      doc.text('Thank you for shopping with us!', 40, footerY, {
-        width: pageWidth,
-        align: 'center',
-      });
-      doc.text('This is a computer-generated invoice.', 40, footerY + 12, {
-        width: pageWidth,
-        align: 'center',
-      });
+      // ── 7. Footer ───────────────────────────────────────────────
+      curY += 2;
+      drawDashedLine(curY);
+      curY += 4;
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(7.5)
+        .fillColor('#222222')
+        .text('*** THANK YOU! VISIT AGAIN ***', leftMargin, curY, {
+          width: contentWidth,
+          align: 'center',
+        });
+      curY = doc.y + 2;
+
+      doc
+        .font('Helvetica')
+        .fontSize(6.5)
+        .fillColor('#777777')
+        .text('Computer Generated Tax Invoice', leftMargin, curY, {
+          width: contentWidth,
+          align: 'center',
+        });
 
       doc.end();
     } catch (error) {

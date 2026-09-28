@@ -10,6 +10,7 @@ router
   .get(billController.getBills)
   .post(billController.createBill);
 
+router.delete('/demo', billController.deleteDemoBills);
 router.get('/:id', billController.getBill);
 router.get('/:id/pdf', billController.getBillPDF);
 router.post('/:id/share/email', billController.shareBillEmail);

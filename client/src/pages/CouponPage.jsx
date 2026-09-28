@@ -92,8 +92,8 @@ export default function CouponPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" fontWeight={700}>Coupons & Promotions</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1.5 }}>
+        <Typography variant="h5" fontWeight={700}>Coupons & Promotions</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={handleOpenAdd}>
           Create Coupon
         </Button>

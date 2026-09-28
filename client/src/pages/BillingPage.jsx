@@ -164,12 +164,12 @@ export default function BillingPage() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} mb={3}>Billing Counter (POS)</Typography>
+      <Typography variant="h5" fontWeight={700} mb={2}>Billing Counter (POS)</Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {/* Left Side - Scanner & Bill Stack */}
         <Grid item xs={12} lg={8}>
-          <Paper sx={{ p: 2, mb: 3 }}>
+          <Paper sx={{ p: 2, mb: 2 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <form onSubmit={handleBarcodeSubmit}>
@@ -238,15 +238,15 @@ export default function BillingPage() {
 
         {/* Right Side - Customer & Summary */}
         <Grid item xs={12} lg={4}>
-          <Paper sx={{ p: 2, mb: 3 }}>
-            <Typography variant="h6" fontWeight={700} mb={2}>Customer Details</Typography>
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" fontWeight={700} mb={1.5}>Customer Details</Typography>
             <TextField fullWidth label="Phone Number" margin="dense" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} />
             <TextField fullWidth label="Customer Name" margin="dense" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} />
             <TextField fullWidth label="Email Address" margin="dense" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} />
           </Paper>
 
-          <Paper sx={{ p: 2, mb: 3 }}>
-            <Typography variant="h6" fontWeight={700} mb={2}>Apply Coupon</Typography>
+          <Paper sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" fontWeight={700} mb={1.5}>Apply Coupon</Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <TextField fullWidth placeholder="Coupon Code" value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} />
               <Button variant="outlined" onClick={handleValidateCoupon}>Apply</Button>

@@ -62,6 +62,17 @@ export const INDIAN_STATES = [
   'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry',
 ];
 
+export const AI_MENU = [
+  { title: 'Overview Dashboard', path: '/ai/dashboard', icon: 'DashboardCustomize', desc: 'Sales summary, stock alerts & top products' },
+  { title: 'Sales Statistics', path: '/ai/numerical-analysis', icon: 'QueryStats', desc: 'Averages, distributions & value ranges' },
+  { title: 'Category Breakdown', path: '/ai/category-analysis', icon: 'Category', desc: 'Revenue & stock by product category' },
+  { title: 'Demand Forecast', path: '/ai/demand-forecast', icon: 'Timeline', desc: 'How much stock you will need soon' },
+  { title: 'Stock Risk Alerts', path: '/ai/stock-risk', icon: 'WarningAmber', desc: 'Which products are at risk of running out' },
+  { title: 'Product Groups', path: '/ai/segmentation', icon: 'Hub', desc: 'Group products by selling behavior' },
+  { title: 'Buy-Together Insights', path: '/ai/recommendations', icon: 'AutoAwesome', desc: 'Products customers frequently buy together' },
+  { title: 'Performance Summary', path: '/ai/model-comparison', icon: 'Compare', desc: 'Accuracy and quality of predictions' },
+];
+
 export const SIDEBAR_MENU = [
   { title: 'Dashboard', path: '/', icon: 'Dashboard', ownerOnly: true },
   { title: 'Billing (POS)', path: '/billing', icon: 'PointOfSale', workerAllowed: true },
@@ -73,5 +84,6 @@ export const SIDEBAR_MENU = [
   { title: 'Coupons', path: '/coupons', icon: 'LocalOffer', ownerOnly: true },
   { title: 'Sales Dashboard', path: '/sales', icon: 'TrendingUp', ownerOnly: true },
   { title: 'Reports', path: '/reports', icon: 'Assessment', ownerOnly: true },
+  { title: 'AI & Analytics', path: '/ai/dashboard', icon: 'Psychology', ownerOnly: true, isAiSection: true },
   { title: 'Settings', path: '/settings', icon: 'Settings', ownerOnly: true },
 ];

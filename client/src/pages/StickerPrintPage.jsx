@@ -73,12 +73,12 @@ export default function StickerPrintPage() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} mb={3}>Barcode Sticker Generator</Typography>
+      <Typography variant="h5" fontWeight={700} mb={2}>Barcode Sticker Generator</Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {/* Left - Selection */}
         <Grid item xs={12} md={5}>
-          <Paper sx={{ p: 3, mb: 3 }}>
+          <Paper sx={{ p: 2, mb: 2 }}>
             <Typography variant="h6" fontWeight={700} mb={2}>Select Products to Print</Typography>
             <Autocomplete
               options={searchProducts?.data || []}

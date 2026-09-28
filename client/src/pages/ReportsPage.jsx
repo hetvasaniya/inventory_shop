@@ -39,51 +39,51 @@ export default function ReportsPage() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} mb={3}>Business Reports & Analytics</Typography>
+      <Typography variant="h5" fontWeight={700} mb={2}>Business Reports & Analytics</Typography>
 
       {/* Summary Row */}
-      <Grid container spacing={3} mb={4}>
+      <Grid container spacing={2} mb={2}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #4CAF50' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="text.secondary" variant="body2">Today's Revenue</Typography>
-              <Typography variant="h4" fontWeight={700}>₹{dashboardData?.today?.revenue?.toFixed(2) || '0.00'}</Typography>
+              <Typography variant="h5" fontWeight={700} mt={0.5}>₹{dashboardData?.today?.revenue?.toFixed(2) || '0.00'}</Typography>
               <Typography variant="caption" color="text.secondary">{dashboardData?.today?.billCount || 0} Bills Generated</Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #FF9800' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="text.secondary" variant="body2">Today's GST Collected</Typography>
-              <Typography variant="h4" fontWeight={700}>₹{dashboardData?.today?.gstCollected?.toFixed(2) || '0.00'}</Typography>
+              <Typography variant="h5" fontWeight={700} mt={0.5}>₹{dashboardData?.today?.gstCollected?.toFixed(2) || '0.00'}</Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #2196F3' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="text.secondary" variant="body2">Low Stock Alerts</Typography>
-              <Typography variant="h4" fontWeight={700}>{dashboardData?.inventory?.lowStockCount || 0}</Typography>
+              <Typography variant="h5" fontWeight={700} mt={0.5}>{dashboardData?.inventory?.lowStockCount || 0}</Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #F44336' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="text.secondary" variant="body2">Expiring Items (30d)</Typography>
-              <Typography variant="h4" fontWeight={700}>{dashboardData?.inventory?.expiringCount || 0}</Typography>
+              <Typography variant="h5" fontWeight={700} mt={0.5}>{dashboardData?.inventory?.expiringCount || 0}</Typography>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
       {/* Charts section */}
-      <Grid container spacing={3} mb={4}>
+      <Grid container spacing={2} mb={2}>
         {/* Sales Trend */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" fontWeight={700} mb={2}>Daily Sales Trend (Last 30 Days)</Typography>
+          <Paper sx={{ p: 2, height: 360 }}>
+            <Typography variant="h6" fontWeight={700} mb={1.5}>Daily Sales Trend (Last 30 Days)</Typography>
             <ResponsiveContainer width="100%" height="85%">
               <LineChart data={dailySales}>
                 <XAxis dataKey="date" stroke="#90A4AE" />
@@ -98,8 +98,8 @@ export default function ReportsPage() {
 
         {/* Category breakdown */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" fontWeight={700} mb={2}>Sales by Category</Typography>
+          <Paper sx={{ p: 2, height: 360 }}>
+            <Typography variant="h6" fontWeight={700} mb={1.5}>Sales by Category</Typography>
             <ResponsiveContainer width="100%" height="85%">
               <BarChart data={categorySales}>
                 <XAxis dataKey="category" stroke="#90A4AE" />

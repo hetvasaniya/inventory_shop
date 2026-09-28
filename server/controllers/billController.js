@@ -250,7 +250,7 @@ const getBills = async (req, res, next) => {
   try {
     const {
       page = 1,
-      limit = 20,
+      limit = 10,
       startDate,
       endDate,
       search,
@@ -445,6 +445,28 @@ const shareBillWhatsApp = async (req, res, next) => {
   }
 };
 
+/**
+ * DELETE /api/bills/demo
+ * Deletes all demo bills starting with AI-DEMO for this shop.
+ */
+const deleteDemoBills = async (req, res, next) => {
+  try {
+    const shopId = req.user.shop;
+    const result = await Bill.deleteMany({
+      shop: shopId,
+      billNumber: { $regex: /^AI-DEMO-/i },
+    });
+
+    res.json({
+      success: true,
+      message: `Successfully deleted ${result.deletedCount} demo transaction(s).`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createBill,
   getBills,
@@ -452,4 +474,5 @@ module.exports = {
   getBillPDF,
   shareBillEmail,
   shareBillWhatsApp,
+  deleteDemoBills,
 };

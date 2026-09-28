@@ -76,6 +76,7 @@ app.use('/api/suppliers', require('./routes/supplierRoutes'));
 app.use('/api/purchase-orders', require('./routes/purchaseOrderRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // Root endpoint
 app.get('/', (req, res) => {

@@ -15,6 +15,7 @@ import {
   Chip,
   useTheme,
   alpha,
+  Button,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -26,13 +27,34 @@ import {
   StorefrontRounded,
   PointOfSale,
   AdminPanelSettings,
+  SmartToy,
+  KeyboardArrowDown,
+  DashboardCustomize,
+  QueryStats,
+  Category,
+  Timeline,
+  WarningAmber,
+  Hub,
+  AutoAwesome,
+  Compare,
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { useThemeStore } from '../../store/themeStore';
-import { NAVBAR_HEIGHT } from '../../utils/constants';
+import { DRAWER_WIDTH, DRAWER_WIDTH_COLLAPSED, NAVBAR_HEIGHT, AI_MENU } from '../../utils/constants';
 import toast from 'react-hot-toast';
+
+const aiIcons = {
+  DashboardCustomize: <DashboardCustomize fontSize="small" sx={{ color: '#3B82F6' }} />,
+  QueryStats: <QueryStats fontSize="small" sx={{ color: '#10B981' }} />,
+  Category: <Category fontSize="small" sx={{ color: '#8B5CF6' }} />,
+  Timeline: <Timeline fontSize="small" sx={{ color: '#EC4899' }} />,
+  WarningAmber: <WarningAmber fontSize="small" sx={{ color: '#F59E0B' }} />,
+  Hub: <Hub fontSize="small" sx={{ color: '#06B6D4' }} />,
+  AutoAwesome: <AutoAwesome fontSize="small" sx={{ color: '#6366F1' }} />,
+  Compare: <Compare fontSize="small" sx={{ color: '#14B8A6' }} />,
+};
 
 const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
   const theme = useTheme();
@@ -40,9 +62,13 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
   const { user, shop, logout, isWorkerMode, setSessionMode } = useAuth();
   const { mode, toggleTheme } = useThemeStore();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [aiAnchorEl, setAiAnchorEl] = useState(null);
 
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
+
+  const handleAiOpen = (e) => setAiAnchorEl(e.currentTarget);
+  const handleAiClose = () => setAiAnchorEl(null);
 
   const handleLogout = () => {
     handleMenuClose();
@@ -59,16 +85,21 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
         .slice(0, 2)
     : 'U';
 
+  const currentDrawerWidth = sidebarOpen ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED;
+
   return (
     <AppBar
       position="fixed"
       elevation={0}
       sx={{
         height: NAVBAR_HEIGHT,
-        bgcolor: alpha(theme.palette.background.default, 0.8),
+        width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+        ml: { md: `${currentDrawerWidth}px` },
+        transition: 'width 0.3s ease, margin 0.3s ease',
+        bgcolor: alpha(theme.palette.background.paper, 0.95),
         backdropFilter: 'blur(20px)',
         borderBottom: `1px solid ${theme.palette.divider}`,
-        zIndex: theme.zIndex.appBar,
+        zIndex: (t) => t.zIndex.appBar,
       }}
     >
       <Toolbar sx={{ height: NAVBAR_HEIGHT, px: { xs: 1, sm: 2 } }}>
@@ -84,6 +115,31 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
             {shop?.shopName || 'BizGrow Store'}
           </Typography>
         </Box>
+
+        {/* 🤖 AI & Analytics Navbar Dropdown */}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={handleAiOpen}
+          startIcon={<SmartToy sx={{ color: '#8B5CF6' }} />}
+          endIcon={<KeyboardArrowDown sx={{ transition: 'transform 0.2s', transform: Boolean(aiAnchorEl) ? 'rotate(180deg)' : 'none' }} />}
+          sx={{
+            mr: 1.5,
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 700,
+            fontSize: '0.82rem',
+            background: alpha('#8B5CF6', 0.08),
+            borderColor: alpha('#8B5CF6', 0.3),
+            color: theme.palette.mode === 'dark' ? '#C4B5FD' : '#6D28D9',
+            '&:hover': {
+              background: alpha('#8B5CF6', 0.16),
+              borderColor: '#8B5CF6',
+            },
+          }}
+        >
+          🤖 AI & Analytics
+        </Button>
 
         {/* Session Mode Chip / Switch */}
         <Chip
@@ -216,6 +272,60 @@ const Navbar = ({ onMenuClick, onSidebarToggle, sidebarOpen }) => {
             </ListItemIcon>
             <ListItemText>Logout</ListItemText>
           </MenuItem>
+        </Menu>
+
+        {/* 🤖 AI & Analytics Dropdown Menu */}
+        <Menu
+          anchorEl={aiAnchorEl}
+          open={Boolean(aiAnchorEl)}
+          onClose={handleAiClose}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          PaperProps={{
+            sx: {
+              mt: 1,
+              width: 300,
+              borderRadius: 2.5,
+              boxShadow: '0 12px 36px rgba(0,0,0,0.18)',
+              overflow: 'hidden',
+            },
+          }}
+        >
+          <Box sx={{ px: 2, py: 1.5, background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(59,130,246,0.08))' }}>
+            <Typography variant="subtitle2" fontWeight={800} sx={{ color: '#7C3AED', display: 'flex', alignItems: 'center', gap: 0.8 }}>
+              <SmartToy fontSize="small" /> 🤖 AI & Analytics
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Machine Learning & Decision Support System
+            </Typography>
+          </Box>
+          <Divider />
+          {AI_MENU.map((item) => (
+            <MenuItem
+              key={item.path}
+              onClick={() => {
+                handleAiClose();
+                navigate(item.path);
+              }}
+              sx={{
+                py: 1,
+                px: 2,
+                '&:hover': {
+                  bgcolor: alpha(theme.palette.primary.main, 0.08),
+                },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                {aiIcons[item.icon]}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.title}
+                secondary={item.desc}
+                primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 600 }}
+                secondaryTypographyProps={{ fontSize: '0.7rem' }}
+              />
+            </MenuItem>
+          ))}
         </Menu>
       </Toolbar>
     </AppBar>

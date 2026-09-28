@@ -302,13 +302,13 @@ export default function InventoryPage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 3,
+          mb: 2,
           flexWrap: 'wrap',
-          gap: 2,
+          gap: 1.5,
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight={800} color="text.primary">
+          <Typography variant="h5" fontWeight={800} color="text.primary">
             Inventory Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -346,14 +346,14 @@ export default function InventoryPage() {
       </Box>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} mb={3}>
+      <Grid container spacing={2} mb={2}>
         <Grid item xs={12} sm={4}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #1976D2' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="text.secondary" variant="body2" fontWeight={600}>
                 Total Products
               </Typography>
-              <Typography variant="h4" fontWeight={800}>
+              <Typography variant="h5" fontWeight={800} mt={0.5}>
                 {productsData?.data?.length || 0}
               </Typography>
             </CardContent>
@@ -361,11 +361,11 @@ export default function InventoryPage() {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #FF9800' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="warning.main" variant="body2" fontWeight={700}>
                 Low Stock Items
               </Typography>
-              <Typography variant="h4" fontWeight={800} color="warning.main">
+              <Typography variant="h5" fontWeight={800} mt={0.5} color="warning.main">
                 {productsData?.data?.filter((p) => p.stock <= p.minStockLevel && p.stock > 0)
                   .length || 0}
               </Typography>
@@ -374,11 +374,11 @@ export default function InventoryPage() {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Card sx={{ bgcolor: 'background.paper', borderLeft: '4px solid #F44336' }}>
-            <CardContent>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Typography color="error.main" variant="body2" fontWeight={700}>
                 Out of Stock
               </Typography>
-              <Typography variant="h4" fontWeight={800} color="error.main">
+              <Typography variant="h5" fontWeight={800} mt={0.5} color="error.main">
                 {productsData?.data?.filter((p) => p.stock === 0).length || 0}
               </Typography>
             </CardContent>

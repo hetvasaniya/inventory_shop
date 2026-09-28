@@ -78,7 +78,7 @@ const generateStickerPDF = (products, quantity = 1) => {
         doc
           .font('Helvetica-Bold')
           .fontSize(10)
-          .text(`₹${sticker.sellingPrice.toFixed(2)}`, x + 5, y + 17, {
+          .text(`Rs. ${sticker.sellingPrice.toFixed(2)}`, x + 5, y + 17, {
             width: stickerWidth - 10,
             align: 'center',
           });

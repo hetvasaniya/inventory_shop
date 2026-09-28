@@ -553,13 +553,13 @@ export default function PurchaseOrdersPage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 3,
+          mb: 2,
           flexWrap: 'wrap',
-          gap: 2,
+          gap: 1.5,
         }}
       >
         <Box>
-          <Typography variant="h4" fontWeight={800} color="text.primary">
+          <Typography variant="h5" fontWeight={800} color="text.primary">
             Purchase Orders
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -591,7 +591,7 @@ export default function PurchaseOrdersPage() {
       </Box>
 
       {/* Navigation Tabs */}
-      <Paper sx={{ mb: 3, borderRadius: 2 }}>
+      <Paper sx={{ mb: 2, borderRadius: 2 }}>
         <Tabs
           value={currentTab}
           onChange={(_, val) => setCurrentTab(val)}
@@ -617,7 +617,7 @@ export default function PurchaseOrdersPage() {
       {currentTab === 0 && (
         <Box>
           {/* Filters Row */}
-          <Paper sx={{ p: 2.5, mb: 3, borderRadius: 2 }}>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={4}>
                 <TextField

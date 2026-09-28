@@ -4,10 +4,13 @@ FastAPI microservice for data visualization, demand prediction, and report gener
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 import os
 
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
+except ImportError:
+    pass
 
 app = FastAPI(
     title="BizGrow Analytics Service",
@@ -24,11 +27,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routers import visualizations, predictions, reports
+from app.routers import visualizations, predictions, reports, ai_analytics
 
 app.include_router(visualizations.router, prefix="/api/analytics", tags=["Visualizations"])
 app.include_router(predictions.router, prefix="/api/predictions", tags=["Predictions"])
 app.include_router(reports.router, prefix="/api/reports/export", tags=["Reports"])
+app.include_router(ai_analytics.router, prefix="/api/ai-ml", tags=["AI & Machine Learning"])
 
 
 @app.get("/")

@@ -38,8 +38,8 @@ const MainLayout = () => {
         />
         <Box
           sx={{
-            p: { xs: 2, sm: 3 },
-            pt: { xs: `${NAVBAR_HEIGHT + 16}px`, sm: `${NAVBAR_HEIGHT + 24}px` },
+            p: { xs: 1.5, sm: 2 },
+            pt: { xs: `${NAVBAR_HEIGHT + 10}px`, sm: `${NAVBAR_HEIGHT + 12}px` },
             minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
           }}
         >
